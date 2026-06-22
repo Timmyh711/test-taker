@@ -1,0 +1,81 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://test-taker.local/schemas/test.json",
+  "title": "Test Taker Test Schema",
+  "type": "object",
+  "required": ["title", "questions"],
+  "additionalProperties": false,
+  "properties": {
+    "title": { "type": "string", "minLength": 1 },
+    "description": { "type": "string" },
+    "version": { "type": "string" },
+    "author": { "type": "string" },
+    "time_limit_minutes": { "type": "number", "exclusiveMinimum": 0 },
+    "auto_grade": { "type": "boolean" },
+    "questions": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/definitions/question" }
+    }
+  },
+  "definitions": {
+    "question": {
+      "type": "object",
+      "required": ["q_number", "question_type", "question_text"],
+      "additionalProperties": false,
+      "properties": {
+        "q_number": { "type": "integer", "minimum": 1 },
+        "question_type": {
+          "type": "string",
+          "enum": [
+            "multiple_choice",
+            "multiple_select",
+            "true_false",
+            "short_answer",
+            "paragraph",
+            "essay",
+            "numeric",
+            "matching",
+            "ordering"
+          ]
+        },
+        "question_text": { "type": "string", "minLength": 1 },
+        "choices": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "left_items": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "right_items": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "items": {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        "required": { "type": "boolean" },
+        "points": { "type": "number", "minimum": 0 },
+        "explanation": { "type": "string" },
+        "hint": { "type": "string" },
+        "image_url": { "type": "string" },
+        "audio_url": { "type": "string" },
+        "video_url": { "type": "string" },
+        "latex_enabled": { "type": "boolean" },
+        "integer_only": { "type": "boolean" },
+        "decimal_places": { "type": "integer", "minimum": 0 },
+        "correct_answer": {},
+        "alternate_answers": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    }
+  }
+}

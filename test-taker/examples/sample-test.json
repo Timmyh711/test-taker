@@ -1,0 +1,108 @@
+{
+  "title": "Algebra & Science Practice",
+  "description": "A comprehensive sample test demonstrating all question types",
+  "version": "1.1",
+  "author": "Test Taker Demo",
+  "time_limit_minutes": 30,
+  "auto_grade": true,
+  "questions": [
+    {
+      "q_number": 1,
+      "question_type": "multiple_choice",
+      "question_text": "What is $2 + 2$?",
+      "choices": ["$1$", "$2$", "$3$", "$4$"],
+      "correct_answer": "$4$",
+      "explanation": "$2 + 2 = 4$ by basic addition.",
+      "points": 1,
+      "required": true
+    },
+    {
+      "q_number": 2,
+      "question_type": "multiple_select",
+      "question_text": "Select all **prime numbers**.",
+      "choices": ["2", "3", "4", "5", "6"],
+      "correct_answer": ["2", "3", "5"],
+      "explanation": "2, 3, and 5 are prime. 4 and 6 are composite.",
+      "points": 2
+    },
+    {
+      "q_number": 3,
+      "question_type": "true_false",
+      "question_text": "The Earth orbits the Sun.",
+      "choices": ["True", "False"],
+      "correct_answer": "True",
+      "explanation": "Earth revolves around the Sun in roughly 365 days.",
+      "points": 1
+    },
+    {
+      "q_number": 4,
+      "question_type": "short_answer",
+      "question_text": "Solve for $x$: $2x + 4 = 10$",
+      "correct_answer": "x = 3",
+      "alternate_answers": ["3", "x=3"],
+      "explanation": "Subtract 4: $2x = 6$. Divide by 2: $x = 3$.",
+      "hint": "Express your answer like $x = 3$",
+      "points": 1
+    },
+    {
+      "q_number": 5,
+      "question_type": "paragraph",
+      "question_text": "Explain the water cycle in a short paragraph.",
+      "points": 3
+    },
+    {
+      "q_number": 6,
+      "question_type": "essay",
+      "question_text": "Discuss the causes of World War I. Use evidence and organize your response clearly.",
+      "points": 10
+    },
+    {
+      "q_number": 7,
+      "question_type": "numeric",
+      "question_text": "Calculate the area of a circle with radius 5. Use $\\pi r^2$ and round to 2 decimal places.",
+      "correct_answer": 78.54,
+      "decimal_places": 2,
+      "explanation": "$\\pi \\times 5^2 = 25\\pi \\approx 78.54$",
+      "points": 2,
+      "latex_enabled": true
+    },
+    {
+      "q_number": 8,
+      "question_type": "numeric",
+      "question_text": "How many sides does a hexagon have?",
+      "correct_answer": 6,
+      "integer_only": true,
+      "explanation": "A hexagon has six sides.",
+      "points": 1
+    },
+    {
+      "q_number": 9,
+      "question_type": "matching",
+      "question_text": "Match each element to its chemical symbol.",
+      "left_items": ["Hydrogen", "Oxygen", "Carbon"],
+      "right_items": ["H", "O", "C", "N"],
+      "correct_answer": { "Hydrogen": "H", "Oxygen": "O", "Carbon": "C" },
+      "explanation": "Standard element symbols from the periodic table.",
+      "points": 3
+    },
+    {
+      "q_number": 10,
+      "question_type": "ordering",
+      "question_text": "Arrange these planets in order from closest to farthest from the Sun.",
+      "items": ["Mars", "Mercury", "Earth", "Venus"],
+      "correct_answer": ["Mercury", "Venus", "Earth", "Mars"],
+      "explanation": "Order from the Sun: Mercury, Venus, Earth, Mars.",
+      "points": 4
+    },
+    {
+      "q_number": 11,
+      "question_type": "multiple_choice",
+      "question_text": "Evaluate the integral:\n\n$$\\int_0^1 x^2 \\, dx$$",
+      "choices": ["1/2", "1/3", "1/4", "2/3"],
+      "correct_answer": "1/3",
+      "explanation": "$\\int_0^1 x^2 dx = \\left[\\frac{x^3}{3}\\right]_0^1 = \\frac{1}{3}$",
+      "latex_enabled": true,
+      "points": 2
+    }
+  ]
+}

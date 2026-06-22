@@ -1,0 +1,16 @@
+# Dependencies & build output
+test-taker/node_modules/
+test-taker/dist/
+
+# Rust / Tauri
+test-taker/src-tauri/target/
+
+# Logs & local
+*.log
+.env
+.env.*
+
+# OS & editors
+.DS_Store
+.idea/
+*.sw?
