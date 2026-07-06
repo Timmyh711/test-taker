@@ -14,7 +14,7 @@ export function AppHeader({
   onHistory,
 }: Props) {
   return (
-    <header className="app-header">
+    <header className={`app-header${onBack || onHistory ? '' : ' app-header--flat'}`}>
       <div className="app-header__nav">
         {onBack && (
           <button type="button" className="btn btn-text" onClick={onBack} aria-label={backLabel}>

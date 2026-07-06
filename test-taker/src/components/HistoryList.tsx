@@ -33,19 +33,10 @@ export function HistoryList({ entries, onSelect }: Props) {
           <button
             type="button"
             onClick={() => onSelect(entry.id)}
-            className="btn-text"
-            style={{
-              width: '100%',
-              textAlign: 'left',
-              border: 'none',
-              padding: 0,
-              cursor: 'pointer',
-              background: 'transparent',
-              color: 'inherit',
-            }}
+            className="outline-row outline-row--history"
           >
-            <p style={{ margin: '0 0 0.35rem', fontWeight: 600, fontSize: '1.0625rem' }}>{entry.test_title}</p>
-            <p className="utility-text" style={{ margin: '0 0 0.5rem' }}>
+            <p style={{ margin: 0, fontWeight: 600, fontSize: '1.0625rem' }}>{entry.test_title}</p>
+            <p className="utility-text" style={{ margin: 0, textTransform: 'none', letterSpacing: 'normal' }}>
               {formatHistoryDate(entry.completed_at)} · {entry.answered_count}/{entry.total_questions} answered ·{' '}
               {formatDuration(entry.time_spent_seconds)}
             </p>

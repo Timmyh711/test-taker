@@ -19,20 +19,25 @@ export function TopBar({ session, onTimerExpire, onTogglePause, onExitHome }: Pr
   const progress = total > 0 ? (answered / total) * 100 : 0;
 
   return (
-    <div>
+    <div className="topbar">
       <div className="topbar-row">
-        <button type="button" className="btn btn-text" onClick={onExitHome} aria-label="Return to home">
-          <Home size={16} strokeWidth={2} aria-hidden />
-          Home
-        </button>
+        <div className="topbar-row__start">
+          <button type="button" className="btn btn-text" onClick={onExitHome} aria-label="Return to home">
+            <Home size={16} strokeWidth={2} aria-hidden />
+            Home
+          </button>
+        </div>
 
-        <h1 className="topbar-title">{session.test.title}</h1>
+        <h1 className="topbar-title" title={session.test.title}>
+          {session.test.title}
+        </h1>
 
-        <span className="utility-text" aria-label={`${answered} of ${total} questions answered`}>
-          {answered}/{total}
-        </span>
-
-        <Timer session={session} onExpire={onTimerExpire} onTogglePause={onTogglePause} />
+        <div className="topbar-row__end">
+          <span className="topbar-stat" aria-label={`${answered} of ${total} questions answered`}>
+            {answered}/{total}
+          </span>
+          <Timer session={session} onExpire={onTimerExpire} onTogglePause={onTogglePause} />
+        </div>
       </div>
 
       <div

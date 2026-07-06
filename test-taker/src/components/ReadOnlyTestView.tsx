@@ -42,15 +42,17 @@ export function ReadOnlyTestView({ entry, onBack }: Props) {
   return (
     <div className="test-shell">
       <header className="test-topbar">
-        <div style={{ padding: '0.875rem 1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+        <div className="topbar-row">
+          <div className="topbar-row__start">
             <button type="button" className="btn btn-text" onClick={onBack}>
               <ArrowLeft size={16} strokeWidth={2} aria-hidden />
               Back
             </button>
-            <h1 style={{ flex: 1, margin: 0, fontSize: '1.125rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {entry.test_title}
-            </h1>
+          </div>
+          <h1 className="topbar-title" title={entry.test_title}>
+            {entry.test_title}
+          </h1>
+          <div className="topbar-row__end">
             {grading && (
               <span className="tag tag--accent">
                 {grading.score}/{grading.max_score} ({grading.percentage}%)
@@ -58,11 +60,11 @@ export function ReadOnlyTestView({ entry, onBack }: Props) {
             )}
             <span className="tag">Read-only</span>
           </div>
-          <p className="utility-text" style={{ margin: '0.75rem 0 0' }}>
-            Completed {formatHistoryDate(entry.completed_at)} · {entry.answered_count}/{entry.total_questions} answered ·{' '}
-            {formatDuration(entry.time_spent_seconds)}
-          </p>
         </div>
+        <p className="topbar-meta utility-text">
+          Completed {formatHistoryDate(entry.completed_at)} · {entry.answered_count}/{entry.total_questions} answered ·{' '}
+          {formatDuration(entry.time_spent_seconds)}
+        </p>
       </header>
 
       <main className="test-main">

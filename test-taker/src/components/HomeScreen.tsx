@@ -103,18 +103,19 @@ export function HomeScreen({
 
   return (
     <div className="home-screen">
-      <div className="home-screen__toolbar">
+      <header className="home-screen__header">
         <AppHeader onOpenSettings={onOpenSettings} onHistory={onViewHistory} />
-      </div>
+      </header>
 
-      <main className="home-screen__main">
-        <section className="home-hero">
-          <p className="utility-text">Test Taker</p>
-          <h1>{getGreeting()}</h1>
-        </section>
+      <div className="home-screen__body">
+        <div className="home-screen__content">
+          <section className="home-hero">
+            <p className="utility-text">Test Taker</p>
+            <h1>{getGreeting()}</h1>
+          </section>
 
-        {pendingResume && (
-          <section className="home-resume" aria-label="Resume in-progress test">
+          {pendingResume && (
+            <section className="home-resume" aria-label="Resume in-progress test">
             <div className="home-resume__head">
               <h2>Continue Your Test</h2>
               {resumeTimer?.isPaused && <span className="tag tag--accent">Paused</span>}
@@ -206,7 +207,8 @@ export function HomeScreen({
             </div>
           )}
         </section>
-      </main>
+        </div>
+      </div>
 
       {recentHistory.length > 0 && (
         <footer className="home-screen__footer">
