@@ -2,7 +2,8 @@ import ReactMarkdown from 'react-markdown';
 import remarkMath from 'remark-math';
 import remarkGfm from 'remark-gfm';
 import rehypeKatex from 'rehype-katex';
-import { Box, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box } from '@mui/material';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import 'katex/dist/katex.min.css';
 
 interface ContentRendererProps {
@@ -101,12 +102,20 @@ export function QuestionMedia({ imageUrl, audioUrl, videoUrl }: MediaProps) {
 
 interface HintProps {
   hint: string;
+  latexEnabled?: boolean;
 }
 
-export function QuestionHint({ hint }: HintProps) {
+export function QuestionHint({ hint, latexEnabled = true }: HintProps) {
   return (
-    <Typography variant="body2" color="text.secondary" sx={{ mt: 1, fontStyle: 'italic' }}>
-      Hint: {hint}
-    </Typography>
+    <Alert
+      severity="info"
+      icon={<LightbulbOutlinedIcon fontSize="inherit" />}
+      sx={{ mt: 2 }}
+      role="region"
+      aria-label="Question hint"
+    >
+      <AlertTitle sx={{ mb: 0.5 }}>Hint</AlertTitle>
+      <ContentRenderer content={hint} latexEnabled={latexEnabled} />
+    </Alert>
   );
 }

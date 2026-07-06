@@ -1,0 +1,302 @@
+/* Import serif fonts for editorial design FIRST */
+@import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Georgia:wght@400;700&display=swap');
+
+/* Editorial & Literary Design System */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* Archival paper tones */
+  --color-paper-light: #faf8f5;
+  --color-paper-dark: #1c1c1e;
+  --color-text-light: #1c1c1e;
+  --color-text-dark: #f5f5f5;
+  --color-border-light: #e5e5e5;
+  --color-border-dark: #2d2d2d;
+
+  /* Typography */
+  --font-serif: Georgia, Baskerville, 'Garamond', serif;
+  --font-mono: 'SF Mono', Monaco, 'Courier New', monospace;
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+
+  /* Spacing scale (8px base) */
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1rem;
+  --space-lg: 1.5rem;
+  --space-xl: 2rem;
+  --space-2xl: 3rem;
+
+  /* Rules/borders */
+  --border-rule: 1px solid;
+  --border-light: 1px solid var(--color-border-light);
+  --border-dark: 1px solid var(--color-border-dark);
+}
+
+/* Light mode (default) */
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+    --bg-primary: var(--color-paper-light);
+    --bg-secondary: white;
+    --text-primary: var(--color-text-light);
+    --text-secondary: #49454f;
+    --border-color: var(--color-border-light);
+    --divider-color: #e7e0ec;
+  }
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg-primary: var(--color-paper-dark);
+    --bg-secondary: #2a2a2c;
+    --text-primary: var(--color-text-dark);
+    --text-secondary: #b3b3b7;
+    --border-color: var(--color-border-dark);
+    --divider-color: #49454f;
+  }
+}
+
+/* Base styles */
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  line-height: 1.6;
+  letter-spacing: 0;
+}
+
+#root {
+  width: 100%;
+  height: 100%;
+}
+
+/* Remove all border-radius globally */
+* {
+  border-radius: 0 !important;
+}
+
+/* Editorial typography hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.3;
+  margin: var(--space-md) 0;
+  color: var(--text-primary);
+}
+
+h1 {
+  font-size: 2.5rem;
+  letter-spacing: -0.02em;
+}
+
+h2 {
+  font-size: 2rem;
+  letter-spacing: -0.01em;
+}
+
+h3 {
+  font-size: 1.5rem;
+}
+
+h4 {
+  font-size: 1.25rem;
+}
+
+h5 {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+h6 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+body, p, li, td, label {
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+/* Small utility text (labels, counts, etc.) */
+.label-text, .utility-text, small, .text-xs {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* Editorial button styles—text or border only */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  border: var(--border-rule) var(--border-color);
+  background: transparent;
+  color: var(--text-primary);
+  transition: all 0.15s ease;
+}
+
+.btn:hover {
+  background: var(--bg-secondary);
+  border-color: var(--text-primary);
+}
+
+.btn:active {
+  opacity: 0.7;
+}
+
+.btn-primary {
+  border-color: var(--text-primary);
+  background: var(--text-primary);
+  color: var(--bg-primary);
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-text {
+  border: none;
+  padding: var(--space-sm) 0;
+  color: var(--text-primary);
+}
+
+.btn-text:hover {
+  text-decoration: underline;
+  background: transparent;
+}
+
+/* Editorial form controls */
+input[type='text'],
+input[type='number'],
+input[type='email'],
+textarea,
+select {
+  width: 100%;
+  padding: var(--space-md);
+  font-family: var(--font-serif);
+  font-size: 0.95rem;
+  border: var(--border-rule) var(--border-color);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+input[type='text']:focus,
+input[type='number']:focus,
+input[type='email']:focus,
+textarea:focus,
+select:focus {
+  outline: none;
+  border-color: var(--text-primary);
+  box-shadow: none;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  width: 1rem;
+  height: 1rem;
+  border: var(--border-rule) var(--border-color);
+  cursor: pointer;
+  accent-color: var(--text-primary);
+}
+
+/* Editorial dividers */
+.divider {
+  border-top: var(--border-rule) var(--border-color);
+  margin: var(--space-lg) 0;
+}
+
+.divider-v {
+  border-left: var(--border-rule) var(--border-color);
+  margin: 0 var(--space-lg);
+}
+
+/* Sharp-edged card alternative—border only */
+.editorial-card {
+  border: var(--border-rule) var(--border-color);
+  padding: var(--space-lg);
+  background: var(--bg-secondary);
+}
+
+/* Academic outline list */
+.outline-list {
+  list-style: none;
+  padding-left: 0;
+}
+
+.outline-list li {
+  padding: var(--space-md) 0;
+  border-bottom: var(--border-rule) var(--border-color);
+}
+
+.outline-list li:last-child {
+  border-bottom: none;
+}
+
+.outline-list li.level-2 {
+  padding-left: var(--space-xl);
+}
+
+/* Strike-through for crossed-out options */
+.struck {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+/* Pause overlay—semi-transparent, minimal */
+.overlay-pause {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(28, 28, 30, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+}
+
+.overlay-pause-content {
+  background: var(--bg-secondary);
+  border: var(--border-rule) var(--border-color);
+  padding: var(--space-2xl);
+  text-align: center;
+  font-family: var(--font-serif);
+  font-size: 1.5rem;
+}
+
+/* Utility spacing classes */
+.gap-rule {
+  gap: var(--space-lg);
+}
+
+/* Print-friendly fallback */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+
+  .no-print {
+    display: none;
+  }
+}

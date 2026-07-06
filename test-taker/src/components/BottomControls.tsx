@@ -2,15 +2,19 @@ import { Box, Button } from '@mui/material';
 import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
 import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import FlagIcon from '@mui/icons-material/Flag';
+import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
 import SendIcon from '@mui/icons-material/Send';
 
 interface Props {
   currentIndex: number;
   totalQuestions: number;
   isFlagged: boolean;
+  hasHint?: boolean;
+  hintVisible?: boolean;
   onPrevious: () => void;
   onNext: () => void;
   onFlag: () => void;
+  onToggleHint?: () => void;
   onSubmit: () => void;
 }
 
@@ -18,9 +22,12 @@ export function BottomControls({
   currentIndex,
   totalQuestions,
   isFlagged,
+  hasHint,
+  hintVisible,
   onPrevious,
   onNext,
   onFlag,
+  onToggleHint,
   onSubmit,
 }: Props) {
   return (
@@ -47,6 +54,18 @@ export function BottomControls({
       </Button>
 
       <Box sx={{ display: 'flex', gap: 1 }}>
+        {hasHint && onToggleHint && (
+          <Button
+            startIcon={<LightbulbOutlinedIcon />}
+            onClick={onToggleHint}
+            color={hintVisible ? 'info' : 'inherit'}
+            variant={hintVisible ? 'contained' : 'outlined'}
+            aria-label={hintVisible ? 'Hide hint' : 'Show hint'}
+            aria-pressed={hintVisible}
+          >
+            {hintVisible ? 'Hide Hint' : 'Hint'}
+          </Button>
+        )}
         <Button
           startIcon={<FlagIcon />}
           onClick={onFlag}

@@ -23,7 +23,12 @@ export function AppHeader({
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={onBack}
-            color="inherit"
+            variant="outlined"
+            sx={{
+              color: 'text.primary',
+              borderColor: 'divider',
+              '&:hover': { borderColor: 'text.secondary', bgcolor: 'action.hover' },
+            }}
             aria-label={backLabel}
           >
             {backLabel}

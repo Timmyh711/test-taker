@@ -17,9 +17,10 @@ interface Props {
   onChange: (answer: Answer) => void;
   readOnly?: boolean;
   grade?: QuestionGrade;
+  showHint?: boolean;
 }
 
-export function QuestionPanel({ question, answer, onChange, readOnly, grade }: Props) {
+export function QuestionPanel({ question, answer, onChange, readOnly, grade, showHint }: Props) {
   const renderAnswer = () => {
     if (readOnly) {
       return <AnswerDisplay question={question} answer={answer} grade={grade} />;
@@ -121,7 +122,9 @@ export function QuestionPanel({ question, answer, onChange, readOnly, grade }: P
         videoUrl={question.video_url}
       />
 
-      {question.hint && !readOnly && <QuestionHint hint={question.hint} />}
+      {question.hint && !readOnly && showHint && (
+        <QuestionHint hint={question.hint} latexEnabled={question.latex_enabled !== false} />
+      )}
 
       <Box sx={{ mt: 3 }} role="group" aria-label="Answer area">
         {!readOnly && question.question_type === 'multiple_select' && (

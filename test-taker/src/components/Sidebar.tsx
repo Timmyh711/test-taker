@@ -1,9 +1,6 @@
-import { Box, Typography } from '@mui/material';
-import FlagIcon from '@mui/icons-material/Flag';
 import type { Question, QuestionGrade, QuestionStatus } from '../types/test';
-import { statusColors } from '../theme/theme';
 
-const DRAWER_WIDTH = 88;
+const SIDEBAR_WIDTH = 160;
 
 interface Props {
   questions: Question[];
@@ -13,37 +10,65 @@ interface Props {
   grades?: QuestionGrade[];
 }
 
+/**
+ * Sidebar — Editorial Question Navigation Grid
+ *
+ * Design:
+ * - Sharp square cells with 1px borders (no border-radius)
+ * - Grid layout instead of vertical list
+ * - Simple border highlights for current selection
+ * - Color indicators:
+ *   - Unflagged/unanswered: Light border
+ *   - Answered: Filled cell or darker border
+ *   - Flagged: Marked with ⚑ symbol (Unicode) or [F] prefix
+ *   - Correct/Incorrect (if graded): Green/Red indicator
+ */
 export function Sidebar({ questions, currentIndex, statuses, onSelect, grades }: Props) {
   const gradeMap = new Map(grades?.map((g) => [g.q_number, g]));
 
+  // Status color mapping — sharp indicator style
+  const getStatusIndicator = (status: QuestionStatus): string => {
+    switch (status) {
+      case 'answered':
+        return '✓'; // Unicode check
+      case 'flagged':
+        return '⚑'; // Unicode flag
+      default:
+        return '';
+    }
+  };
+
   return (
-    <Box
-      sx={{
-        width: DRAWER_WIDTH,
-        flexShrink: 0,
-        borderRight: 1,
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
+    <div
+      className="flex flex-col bg-white dark:bg-gray-950 border-r border-editorial-light dark:border-editorial-dark"
+      style={{
+        width: `${SIDEBAR_WIDTH}px`,
+        height: '100%',
+        fontFamily: 'var(--font-mono)',
       }}
     >
-      <Box sx={{ p: 1.5, borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>
-          {questions.length} Qs
-        </Typography>
-      </Box>
+      {/* Total question count — Utility text header */}
+      <div
+        className="px-3 py-2 border-b border-editorial-light dark:border-editorial-dark text-center"
+        style={{
+          fontFamily: 'var(--font-mono)',
+          fontSize: '0.7rem',
+          color: 'var(--text-secondary)',
+          textTransform: 'uppercase',
+          letterSpacing: '0.1em',
+        }}
+      >
+        {questions.length} Questions
+      </div>
 
-      <Box
-        sx={{
-          flex: 1,
-          overflow: 'auto',
-          p: 1,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 0.75,
-          alignItems: 'center',
+      {/* Question grid — 2 columns of square buttons */}
+      <div
+        className="flex-1 overflow-y-auto p-2"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: 'repeat(2, 1fr)',
+          gap: '0.5rem',
+          alignContent: 'start',
         }}
       >
         {questions.map((q, i) => {
@@ -51,70 +76,62 @@ export function Sidebar({ questions, currentIndex, statuses, onSelect, grades }:
           const grade = gradeMap.get(q.q_number);
           const isSelected = i === currentIndex;
 
-          let borderColor = statusColors[status];
-          if (grade?.correct === true) borderColor = statusColors.answered;
-          if (grade?.correct === false) borderColor = statusColors.flagged;
+          // Determine border color based on grade/status
+          let borderColor = 'var(--border-color)';
+          let backgroundColor = 'transparent';
+          let indicatorText = getStatusIndicator(status);
+
+          if (grade?.correct === true) {
+            borderColor = 'var(--text-primary)';
+            indicatorText = '✓';
+          } else if (grade?.correct === false) {
+            borderColor = 'var(--text-primary)';
+            indicatorText = '✗';
+          } else if (status === 'answered') {
+            borderColor = 'var(--border-color)';
+            backgroundColor = 'rgba(28, 28, 30, 0.05)';
+          } else if (status === 'flagged') {
+            borderColor = 'var(--text-primary)';
+          }
+
+          if (isSelected) {
+            backgroundColor = 'var(--text-primary)';
+            borderColor = 'var(--text-primary)';
+          }
 
           return (
-            <Box
+            <button
               key={q.q_number}
-              component="button"
               onClick={() => onSelect(i)}
-              aria-label={`Question ${q.q_number}`}
-              aria-current={isSelected ? 'true' : undefined}
-              sx={{
-                position: 'relative',
-                width: 44,
-                height: 44,
-                border: 'none',
-                borderRadius: 3,
+              aria-label={`Question ${q.q_number}${status === 'flagged' ? ' (flagged)' : ''}`}
+              aria-current={isSelected ? 'page' : undefined}
+              className="flex items-center justify-center font-mono text-sm font-bold transition-colors duration-150 hover:opacity-80 active:opacity-60"
+              style={{
+                width: '100%',
+                aspectRatio: '1',
+                border: `1px solid ${borderColor}`,
+                borderRadius: 0,
+                backgroundColor: backgroundColor,
+                color: isSelected ? backgroundColor === 'var(--text-primary)' ? 'var(--bg-primary)' : 'var(--text-primary)' : 'var(--text-primary)',
                 cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                fontFamily: 'inherit',
-                fontSize: '0.875rem',
-                fontWeight: isSelected ? 700 : 500,
-                bgcolor: isSelected ? 'primary.main' : 'action.hover',
-                color: isSelected ? 'primary.contrastText' : 'text.primary',
-                boxShadow: isSelected ? 2 : 0,
-                outline: '2px solid',
-                outlineColor: isSelected ? 'primary.main' : 'transparent',
-                outlineOffset: 2,
-                transition: 'all 0.15s ease',
-                '&:hover': {
-                  bgcolor: isSelected ? 'primary.dark' : 'action.selected',
-                },
-                '&::before': {
-                  content: '""',
-                  position: 'absolute',
-                  left: 0,
-                  top: 6,
-                  bottom: 6,
-                  width: 3,
-                  borderRadius: 2,
-                  bgcolor: borderColor,
-                },
+                fontFamily: 'var(--font-mono)',
               }}
             >
-              {q.q_number}
-              {status === 'flagged' && (
-                <FlagIcon
-                  sx={{
-                    position: 'absolute',
-                    top: -4,
-                    right: -4,
-                    fontSize: 14,
-                    color: 'error.main',
-                  }}
-                />
+              {isSelected && (
+                <span style={{ fontWeight: 700, fontSize: '0.9rem' }}>{q.q_number}</span>
               )}
-            </Box>
+              {!isSelected && indicatorText && (
+                <span style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>{indicatorText}</span>
+              )}
+              {!isSelected && !indicatorText && (
+                <span style={{ fontSize: '0.85rem' }}>{q.q_number}</span>
+              )}
+            </button>
           );
         })}
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
 
-export { DRAWER_WIDTH };
+export { SIDEBAR_WIDTH as DRAWER_WIDTH };

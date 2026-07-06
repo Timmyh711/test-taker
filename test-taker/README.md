@@ -1,16 +1,17 @@
 # Test Taker
 
-A production-quality Ubuntu desktop application for taking tests from JSON files. Built with **Tauri**, **React**, **TypeScript**, and **Material UI**.
+A production-quality Ubuntu desktop application for taking tests from JSON files. Built with **Tauri**, **React**, **TypeScript**, and **Editorial Design Language**.
 
-Test Taker provides a professional testing environment inspired by College Board Bluebook — dark mode, question navigation, autosave, optional timers, and rich content rendering including Markdown and LaTeX.
+Test Taker provides a professional testing environment inspired by prestigious print examinations (Oxford/Cambridge, SAT) — featuring a sophisticated literary aesthetic with serif typography, minimal design, dark mode, question navigation, autosave, optional timers, and rich content rendering including Markdown and LaTeX.
 
 ## Features
 
+- **Editorial Design Language** — Premium serif typography, sharp borders, sophisticated print-inspired aesthetic
 - Import tests via pasted or uploaded JSON
 - JSON validation with detailed error messages
-- Nine question types: multiple choice, multiple select, true/false, short answer, paragraph, essay, numeric, matching, ordering
+- Eight question types: multiple choice, true/false, multiple select, short answer, numeric, matching, ordering, drag-and-drop
 - Markdown and LaTeX rendering (KaTeX)
-- Rich text editors for paragraph and essay responses
+- Rich text editors for open-ended responses
 - Drag-and-drop ordering questions
 - Question flagging and status tracking
 - Autosave with resume/discard on reopen
@@ -18,6 +19,7 @@ Test Taker provides a professional testing environment inspired by College Board
 - Review screen before submission
 - Output JSON with responses and metadata
 - Copy, download, and save response JSON
+- Full light/dark mode support
 - Fully offline — no server required
 
 ## Prerequisites (Ubuntu)
@@ -71,13 +73,63 @@ npm run tauri build
 The `.deb` file will be generated at:
 
 ```
-src-tauri/target/release/bundle/deb/test-taker_1.0.0_amd64.deb
+src-tauri/target/release/bundle/deb/test-taker_*.deb
 ```
 
 ## Installation (Ubuntu)
 
+### Automated Installation
+
+Run the provided installation script (requires `sudo` access):
+
 ```bash
-sudo dpkg -i src-tauri/target/release/bundle/deb/test-taker_1.0.0_amd64.deb
+./install.sh
+```
+
+This script will:
+1. Install all system dependencies for Tauri
+2. Install Rust (if not already installed)
+3. Install Node.js dependencies
+4. Build the application
+5. Create and install the `.deb` package
+6. Launch the application
+
+### Manual Installation
+
+If you prefer to install manually:
+
+```bash
+# Install system dependencies
+sudo apt update
+sudo apt install -y \
+  libwebkit2gtk-4.1-dev \
+  build-essential \
+  curl \
+  wget \
+  file \
+  libssl-dev \
+  libayatana-appindicator3-dev \
+  librsvg2-dev \
+  libgtk-3-dev
+
+# Build the application
+npm install
+npm run build
+npm run tauri build
+
+# Install the .deb package
+sudo dpkg -i src-tauri/target/release/bundle/deb/test-taker_*.deb
+sudo apt-get install -f -y
+
+# Launch
+test-taker
+```
+
+### Uninstall
+
+```bash
+sudo apt remove test-taker
+```
 sudo apt-get install -f   # resolve any missing dependencies
 ```
 

@@ -1,6 +1,3 @@
-import { Box, Button, Paper, Typography } from '@mui/material';
-import PauseCircleOutlinedIcon from '@mui/icons-material/PauseCircleOutlined';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { formatTime, getTimerState } from '../utils/timer';
 import type { SavedSession } from '../types/test';
 
@@ -9,49 +6,112 @@ interface Props {
   onResume: () => void;
 }
 
+/**
+ * PausedOverlay — Editorial Pause Modal
+ *
+ * Design:
+ * - Semi-transparent dark overlay (50% opacity)
+ * - Sharp border card in center
+ * - Serif typography for message
+ * - Monospace for time remaining
+ * - Minimal primary button to resume
+ */
 export function PausedOverlay({ session, onResume }: Props) {
   const timer = getTimerState(session);
   if (!timer.isPaused) return null;
 
   return (
-    <Box
-      sx={{
-        position: 'fixed',
-        inset: 0,
-        zIndex: 1400,
-        bgcolor: 'rgba(0, 0, 0, 0.75)',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        p: 3,
-      }}
+    <div
+      className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center p-6"
       role="dialog"
       aria-modal="true"
       aria-labelledby="paused-title"
     >
-      <Paper sx={{ p: 4, maxWidth: 420, width: '100%', textAlign: 'center' }}>
-        <PauseCircleOutlinedIcon sx={{ fontSize: 56, color: 'warning.main', mb: 2 }} />
-        <Typography id="paused-title" variant="h5" gutterBottom>
+      {/* Card — Editorial style with sharp border */}
+      <div
+        className="editorial-card max-w-96 w-full text-center"
+        style={{
+          background: 'var(--bg-secondary)',
+          border: '1px solid var(--border-color)',
+          borderRadius: 0,
+          padding: 'var(--space-2xl)',
+        }}
+      >
+        {/* Pause symbol */}
+        <div
+          style={{
+            fontSize: '3rem',
+            marginBottom: 'var(--space-lg)',
+            color: 'var(--text-primary)',
+          }}
+        >
+          ⏸
+        </div>
+
+        {/* Title */}
+        <h2
+          id="paused-title"
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1.5rem',
+            fontWeight: 600,
+            marginBottom: 'var(--space-md)',
+            color: 'var(--text-primary)',
+          }}
+        >
           Test Paused
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ mb: 1 }}>
+        </h2>
+
+        {/* Message */}
+        <p
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1rem',
+            color: 'var(--text-secondary)',
+            marginBottom: 'var(--space-md)',
+          }}
+        >
           The timer is paused. Resume to continue your test.
-        </Typography>
+        </p>
+
+        {/* Time remaining — Monospace */}
         {timer.hasTimer && (
-          <Typography variant="h6" sx={{ fontFamily: 'monospace', mb: 3 }}>
-            {formatTime(timer.remainingMs)} remaining
-          </Typography>
+          <div
+            className="label-text mb-6"
+            style={{
+              fontFamily: 'var(--font-mono)',
+              fontSize: '1rem',
+              fontWeight: 700,
+              color: 'var(--text-primary)',
+              letterSpacing: '0.1em',
+            }}
+          >
+            {formatTime(timer.remainingMs)} REMAINING
+          </div>
         )}
-        <Button
-          variant="contained"
-          size="large"
-          startIcon={<PlayArrowIcon />}
+
+        {/* Resume button — Primary action */}
+        <button
+          className="btn btn-primary w-full"
           onClick={onResume}
           autoFocus
+          style={{
+            fontFamily: 'var(--font-serif)',
+            fontSize: '1rem',
+            fontWeight: 600,
+            padding: 'var(--space-md) var(--space-lg)',
+            border: '1px solid var(--text-primary)',
+            background: 'var(--text-primary)',
+            color: 'var(--bg-primary)',
+            cursor: 'pointer',
+            transition: 'opacity 0.15s ease',
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.opacity = '0.85')}
+          onMouseLeave={(e) => (e.currentTarget.style.opacity = '1')}
         >
-          Resume Test
-        </Button>
-      </Paper>
-    </Box>
+          ▶ Resume Test
+        </button>
+      </div>
+    </div>
   );
 }

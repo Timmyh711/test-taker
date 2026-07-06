@@ -1,5 +1,4 @@
-import { useCallback, useEffect } from 'react';
-import { Box } from '@mui/material';
+import { useCallback, useEffect, useState } from 'react';
 import type { SavedSession } from '../types/test';
 import type { Answer } from '../types/test';
 import { getQuestionStatus } from '../utils/answers';
@@ -22,6 +21,17 @@ interface Props {
   onExitHome: () => void;
 }
 
+/**
+ * TestView — Editorial Design Implementation
+ *
+ * Layout Architecture:
+ * - Top bar: Sharp 1px border, navigation + timer
+ * - Main content: Vertical divider separates left sidebar (nav grid) from right panel (question)
+ * - Sidebar: Small square question cells with sharp borders (no rounded navigation)
+ * - Question panel: Clean serif typography, minimal styling
+ * - Bottom controls: Text-only or border-only buttons
+ * - Pause overlay: Semi-transparent, minimal text
+ */
 export function TestView({
   session,
   setAnswer,
@@ -37,6 +47,11 @@ export function TestView({
   const currentIndex = session.currentQuestion;
   const currentQuestion = questions[currentIndex];
   const isPaused = getTimerState(session).isPaused;
+  const [hintVisible, setHintVisible] = useState(false);
+
+  useEffect(() => {
+    setHintVisible(false);
+  }, [currentIndex]);
 
   const statuses = questions.map((q) =>
     getQuestionStatus(
@@ -82,40 +97,78 @@ export function TestView({
   if (!currentQuestion) return null;
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <TopBar
-        session={session}
-        onTimerExpire={onTimerExpire}
-        onTogglePause={onTogglePause}
-        onExitHome={onExitHome}
-      />
-      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', pointerEvents: isPaused ? 'none' : 'auto', opacity: isPaused ? 0.4 : 1 }}>
-        <Sidebar
-          questions={questions}
-          currentIndex={currentIndex}
-          statuses={statuses}
-          onSelect={goTo}
+    <div className="flex flex-col w-full h-screen bg-editorial-50 dark:bg-editorial-900">
+      {/* Top Bar — Sharp border, navigation + title + timer */}
+      <header
+        className="flex-shrink-0 border-b border-editorial-light dark:border-editorial-dark bg-white dark:bg-gray-950 px-6 py-4"
+        style={{
+          borderBottom: 'var(--border-light)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          gap: '1rem',
+          fontFamily: 'var(--font-serif)',
+        }}
+      >
+        <TopBar
+          session={session}
+          onTimerExpire={onTimerExpire}
+          onTogglePause={onTogglePause}
+          onExitHome={onExitHome}
         />
-        <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-          <Box sx={{ flex: 1, overflow: 'auto' }}>
+      </header>
+
+      {/* Main content: Split layout with vertical divider */}
+      <main
+        className="flex flex-1 overflow-hidden"
+        style={{
+          opacity: isPaused ? 0.4 : 1,
+          pointerEvents: isPaused ? 'none' : 'auto',
+          transition: 'opacity 0.2s ease',
+        }}
+      >
+        {/* Left Sidebar — Question Navigation Grid */}
+        <aside className="flex-shrink-0 border-r border-editorial-light dark:border-editorial-dark w-40 overflow-y-auto bg-white dark:bg-gray-950">
+          <Sidebar
+            questions={questions}
+            currentIndex={currentIndex}
+            statuses={statuses}
+            onSelect={goTo}
+          />
+        </aside>
+
+        {/* Right Panel — Question Content */}
+        <section className="flex-1 flex flex-col overflow-hidden bg-editorial-50 dark:bg-editorial-900">
+          {/* Question content area */}
+          <div className="flex-1 overflow-y-auto">
             <QuestionPanel
               question={currentQuestion}
               answer={getAnswer(currentQuestion.q_number)}
               onChange={(a) => setAnswer(currentQuestion.q_number, a)}
+              showHint={hintVisible}
             />
-          </Box>
-          <BottomControls
-            currentIndex={currentIndex}
-            totalQuestions={questions.length}
-            isFlagged={session.flagged.includes(currentQuestion.q_number)}
-            onPrevious={() => goTo(currentIndex - 1)}
-            onNext={() => goTo(currentIndex + 1)}
-            onFlag={() => flagQuestion(currentQuestion.q_number)}
-            onSubmit={onReview}
-          />
-        </Box>
-      </Box>
+          </div>
+
+          {/* Bottom Controls — Footer with navigation */}
+          <footer className="flex-shrink-0 border-t border-editorial-light dark:border-editorial-dark bg-white dark:bg-gray-950 px-6 py-4">
+            <BottomControls
+              currentIndex={currentIndex}
+              totalQuestions={questions.length}
+              isFlagged={session.flagged.includes(currentQuestion.q_number)}
+              hasHint={!!currentQuestion.hint}
+              hintVisible={hintVisible}
+              onPrevious={() => goTo(currentIndex - 1)}
+              onNext={() => goTo(currentIndex + 1)}
+              onFlag={() => flagQuestion(currentQuestion.q_number)}
+              onToggleHint={() => setHintVisible((v) => !v)}
+              onSubmit={onReview}
+            />
+          </footer>
+        </section>
+      </main>
+
+      {/* Pause Overlay — Semi-transparent, minimal */}
       <PausedOverlay session={session} onResume={onTogglePause} />
-    </Box>
+    </div>
   );
 }
