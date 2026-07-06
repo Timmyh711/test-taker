@@ -1,5 +1,4 @@
 import { useState, useCallback, useEffect } from 'react';
-import { ThemeProvider, CssBaseline } from '@mui/material';
 import { useSettings } from './hooks/useSettings';
 import { useTestSession } from './hooks/useTestSession';
 import { HomeScreen } from './components/HomeScreen';
@@ -19,7 +18,7 @@ function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [viewingHistoryId, setViewingHistoryId] = useState<string | null>(null);
 
-  const { settings, theme, setThemeMode, setAccentColor } = useSettings();
+  const { settings, setThemeMode, setAccentColor } = useSettings();
   const {
     session,
     pendingResume,
@@ -122,8 +121,7 @@ function App() {
   const viewingEntry = viewingHistoryId ? findHistoryEntry(history, viewingHistoryId) : null;
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
+    <>
       {screen === 'import' && !session && (
         <HomeScreen
           pendingResume={pendingResume}
@@ -179,7 +177,7 @@ function App() {
         onThemeModeChange={setThemeMode}
         onAccentChange={setAccentColor}
       />
-    </ThemeProvider>
+    </>
   );
 }
 

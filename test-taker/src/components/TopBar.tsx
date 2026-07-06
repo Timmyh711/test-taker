@@ -10,16 +10,6 @@ interface Props {
   onExitHome: () => void;
 }
 
-/**
- * TopBar — Editorial Navigation Header
- *
- * Design:
- * - Sharp 1px border bottom (no shadows)
- * - Clean serif typography for title
- * - Monospace font for utility counts (answered/total)
- * - Text-only or minimal border buttons
- * - Progress bar replaced with visual feedback (border color shift or minimal indicator)
- */
 export function TopBar({ session, onTimerExpire, onTogglePause, onExitHome }: Props) {
   const total = session.test.questions.length;
   const answered = session.test.questions.filter((q) =>
@@ -28,66 +18,45 @@ export function TopBar({ session, onTimerExpire, onTogglePause, onExitHome }: Pr
   const progress = total > 0 ? (answered / total) * 100 : 0;
 
   return (
-    <div className="w-full flex flex-col bg-white dark:bg-gray-950">
-      {/* Top navigation bar */}
-      <div className="flex items-center justify-between gap-4 px-6 py-4">
-        {/* Home button — Text with subtle border */}
-        <button
-          onClick={onExitHome}
-          className="btn btn-text flex items-center gap-1"
-          style={{
-            fontFamily: 'var(--font-serif)',
-            fontSize: '0.95rem',
-          }}
-          aria-label="Return to home"
-        >
+    <div>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: '1rem',
+          padding: '0.875rem 1.5rem',
+          flexWrap: 'wrap',
+        }}
+      >
+        <button type="button" className="btn btn-text" onClick={onExitHome} aria-label="Return to home">
           ← Home
         </button>
 
-        {/* Test title — Clean serif, no truncation */}
         <h1
-          className="flex-1 text-xl text-center"
           style={{
-            fontFamily: 'var(--font-serif)',
+            flex: 1,
+            margin: 0,
+            fontSize: '1.125rem',
             fontWeight: 600,
+            textAlign: 'center',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-            color: 'var(--text-primary)',
           }}
         >
           {session.test.title}
         </h1>
 
-        {/* Progress count — Monospace utility text */}
-        <div
-          className="utility-text flex-shrink-0 hidden sm:block"
-          style={{
-            fontFamily: 'var(--font-mono)',
-            fontSize: '0.75rem',
-            color: 'var(--text-secondary)',
-          }}
-          aria-label={`${answered} of ${total} questions answered`}
-        >
+        <span className="utility-text" aria-label={`${answered} of ${total} questions answered`}>
           {answered}/{total}
-        </div>
+        </span>
 
-        {/* Timer component */}
-        <div className="flex-shrink-0">
-          <Timer session={session} onExpire={onTimerExpire} onTogglePause={onTogglePause} />
-        </div>
+        <Timer session={session} onExpire={onTimerExpire} onTogglePause={onTogglePause} />
       </div>
 
-      {/* Progress indicator — Minimal 2px horizontal bar */}
-      <div
-        className="h-0.5 bg-gray-300 dark:bg-gray-700"
-        style={{
-          width: `${progress}%`,
-          transition: 'width 0.2s ease',
-          backgroundColor: 'var(--text-primary)',
-        }}
-        aria-label="Test completion progress"
-      />
+      <div className="progress-track" aria-label="Test completion progress" role="progressbar" aria-valuenow={answered} aria-valuemin={0} aria-valuemax={total}>
+        <div className="progress-fill" style={{ width: `${progress}%` }} />
+      </div>
     </div>
   );
 }

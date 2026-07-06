@@ -3,17 +3,7 @@ import StarterKit from '@tiptap/starter-kit';
 import Underline from '@tiptap/extension-underline';
 import Link from '@tiptap/extension-link';
 import Placeholder from '@tiptap/extension-placeholder';
-import { Box, IconButton, Divider, Tooltip } from '@mui/material';
-import FormatBoldIcon from '@mui/icons-material/FormatBold';
-import FormatItalicIcon from '@mui/icons-material/FormatItalic';
-import FormatUnderlinedIcon from '@mui/icons-material/FormatUnderlined';
-import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
-import FormatListNumberedIcon from '@mui/icons-material/FormatListNumbered';
-import FormatQuoteIcon from '@mui/icons-material/FormatQuote';
-import CodeIcon from '@mui/icons-material/Code';
-import LinkIcon from '@mui/icons-material/Link';
-import FunctionsIcon from '@mui/icons-material/Functions';
-import { useEffect, useState, type ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { LaTeXPreview } from '../LaTeXPreview';
 import { htmlToPlainText } from '../../utils/latex';
 
@@ -23,6 +13,7 @@ interface Props {
   placeholder?: string;
   minHeight?: number;
   autosaveInterval?: number;
+  fillHeight?: boolean;
 }
 
 export function RichTextEditor({
@@ -31,6 +22,7 @@ export function RichTextEditor({
   placeholder = 'Enter your response...',
   minHeight = 200,
   autosaveInterval = 3000,
+  fillHeight = false,
 }: Props) {
   const [previewText, setPreviewText] = useState('');
 
@@ -74,81 +66,43 @@ export function RichTextEditor({
     setPreviewText(htmlToPlainText(editor.getHTML()));
   };
 
-  const btn = (active: boolean, onClick: () => void, icon: ReactNode, label: string) => (
-    <Tooltip title={label}>
-      <IconButton
-        size="small"
-        onClick={onClick}
-        color={active ? 'primary' : 'default'}
-        aria-label={label}
-      >
-        {icon}
-      </IconButton>
-    </Tooltip>
+  const toolBtn = (active: boolean, onClick: () => void, label: string, text: string) => (
+    <button
+      type="button"
+      className={active ? 'is-active' : ''}
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+    >
+      {text}
+    </button>
   );
 
   return (
-    <Box>
-      <Box
-        sx={{
-          border: '1px solid',
-          borderColor: 'divider',
-          borderRadius: 1,
-          overflow: 'hidden',
-        }}
-      >
-        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, p: 1, bgcolor: 'action.hover' }}>
-          {btn(editor.isActive('bold'), () => editor.chain().focus().toggleBold().run(), <FormatBoldIcon fontSize="small" />, 'Bold')}
-          {btn(editor.isActive('italic'), () => editor.chain().focus().toggleItalic().run(), <FormatItalicIcon fontSize="small" />, 'Italic')}
-          {btn(editor.isActive('underline'), () => editor.chain().focus().toggleUnderline().run(), <FormatUnderlinedIcon fontSize="small" />, 'Underline')}
-          <Divider orientation="vertical" flexItem />
-          {btn(editor.isActive('bulletList'), () => editor.chain().focus().toggleBulletList().run(), <FormatListBulletedIcon fontSize="small" />, 'Bullet list')}
-          {btn(editor.isActive('orderedList'), () => editor.chain().focus().toggleOrderedList().run(), <FormatListNumberedIcon fontSize="small" />, 'Numbered list')}
-          {btn(editor.isActive('blockquote'), () => editor.chain().focus().toggleBlockquote().run(), <FormatQuoteIcon fontSize="small" />, 'Blockquote')}
-          {btn(editor.isActive('codeBlock'), () => editor.chain().focus().toggleCodeBlock().run(), <CodeIcon fontSize="small" />, 'Code block')}
-          {btn(false, () => {
+    <div className={fillHeight ? 'editor-wrap editor-wrap--fill' : 'editor-wrap'}>
+      <div className="editor-shell">
+        <div className="editor-toolbar">
+          {toolBtn(editor.isActive('bold'), () => editor.chain().focus().toggleBold().run(), 'Bold', 'B')}
+          {toolBtn(editor.isActive('italic'), () => editor.chain().focus().toggleItalic().run(), 'Italic', 'I')}
+          {toolBtn(editor.isActive('underline'), () => editor.chain().focus().toggleUnderline().run(), 'Underline', 'U')}
+          <span style={{ borderLeft: '1px solid var(--border-color)', margin: '0 0.25rem' }} />
+          {toolBtn(editor.isActive('bulletList'), () => editor.chain().focus().toggleBulletList().run(), 'Bullet list', '•')}
+          {toolBtn(editor.isActive('orderedList'), () => editor.chain().focus().toggleOrderedList().run(), 'Numbered list', '1.')}
+          {toolBtn(editor.isActive('blockquote'), () => editor.chain().focus().toggleBlockquote().run(), 'Blockquote', '❝')}
+          {toolBtn(editor.isActive('codeBlock'), () => editor.chain().focus().toggleCodeBlock().run(), 'Code block', '</>')}
+          {toolBtn(false, () => {
             const url = window.prompt('Enter URL');
             if (url) editor.chain().focus().setLink({ href: url }).run();
-          }, <LinkIcon fontSize="small" />, 'Link')}
-          <Divider orientation="vertical" flexItem />
-          {btn(false, () => insertLatex(false), <FunctionsIcon fontSize="small" />, 'Insert inline LaTeX')}
-          {btn(false, () => insertLatex(true), <FunctionsIcon fontSize="small" />, 'Insert display LaTeX')}
-        </Box>
-        <Box
-          sx={{
-            p: 2,
-            minHeight,
-            '& .ProseMirror': {
-              outline: 'none',
-              minHeight: minHeight - 32,
-              '& p': { mb: 1 },
-              '& ul, & ol': { pl: 3 },
-              '& blockquote': {
-                borderLeft: '3px solid',
-                borderColor: 'primary.main',
-                pl: 2,
-                color: 'text.secondary',
-              },
-              '& pre': {
-                bgcolor: '#0d1117',
-                p: 1.5,
-                borderRadius: 1,
-                overflow: 'auto',
-              },
-              '& p.is-editor-empty:first-of-type::before': {
-                color: 'text.disabled',
-                content: 'attr(data-placeholder)',
-                float: 'left',
-                height: 0,
-                pointerEvents: 'none',
-              },
-            },
-          }}
-        >
+          }, 'Link', '🔗')}
+          <span style={{ borderLeft: '1px solid var(--border-color)', margin: '0 0.25rem' }} />
+          {toolBtn(false, () => insertLatex(false), 'Insert inline LaTeX', '$x$')}
+          {toolBtn(false, () => insertLatex(true), 'Insert display LaTeX', '$$')}
+        </div>
+        <div className="editor-body" style={fillHeight ? undefined : { minHeight }}>
           <EditorContent editor={editor} />
-        </Box>
-      </Box>
-      <LaTeXPreview content={previewText} />
-    </Box>
+        </div>
+      </div>
+      {!fillHeight && <LaTeXPreview content={previewText} />}
+    </div>
   );
 }

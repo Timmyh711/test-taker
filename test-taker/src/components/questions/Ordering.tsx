@@ -15,8 +15,6 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Box, Typography } from '@mui/material';
-import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
 import { ChoiceLabel } from '../ChoiceLabel';
 
 interface SortableItemProps {
@@ -26,41 +24,38 @@ interface SortableItemProps {
 }
 
 function SortableItem({ id, label, index }: SortableItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
-    id,
-  });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({ id });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.5 : 1,
+    opacity: isDragging ? 0.55 : 1,
   };
 
   return (
-    <Box
+    <div
       ref={setNodeRef}
-      style={style}
-      sx={{
+      style={{
+        ...style,
         display: 'flex',
         alignItems: 'center',
-        gap: 1,
-        p: 2,
-        mb: 1,
-        border: '1px solid',
-        borderColor: isDragging ? 'primary.main' : 'divider',
-        borderRadius: 1,
-        bgcolor: 'background.paper',
+        gap: '0.75rem',
+        padding: '0.875rem 0',
+        borderBottom: '1px solid var(--border-color)',
         cursor: 'grab',
+        background: isDragging ? 'var(--bg-secondary)' : 'transparent',
       }}
       {...attributes}
       {...listeners}
     >
-      <DragIndicatorIcon color="action" aria-hidden />
-      <Typography variant="body2" color="text.secondary" sx={{ minWidth: 24 }}>
+      <span className="utility-text" style={{ minWidth: '1.5rem' }}>
         {index + 1}.
-      </Typography>
+      </span>
+      <span style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-mono)' }} aria-hidden>
+        ⠿
+      </span>
       <ChoiceLabel content={label} />
-    </Box>
+    </div>
   );
 }
 

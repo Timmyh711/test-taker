@@ -1,19 +1,4 @@
-import { useState } from 'react';
-import {
-  Box,
-  Button,
-  Paper,
-  Typography,
-  Alert,
-  Snackbar,
-  Chip,
-  Divider,
-} from '@mui/material';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import DownloadIcon from '@mui/icons-material/Download';
-import SaveIcon from '@mui/icons-material/Save';
-import RestartAltIcon from '@mui/icons-material/RestartAlt';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import { useEffect, useState } from 'react';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
 import type { TestOutput } from '../types/test';
@@ -28,6 +13,12 @@ export function ResultsScreen({ output, onNewTest }: Props) {
   const [copied, setCopied] = useState(false);
   const jsonString = JSON.stringify(output, null, 2);
   const grading = output.metadata.grading;
+
+  useEffect(() => {
+    if (!copied) return;
+    const t = setTimeout(() => setCopied(false), 3000);
+    return () => clearTimeout(t);
+  }, [copied]);
 
   const handleCopy = async () => {
     await navigator.clipboard.writeText(jsonString);
@@ -57,135 +48,107 @@ export function ResultsScreen({ output, onNewTest }: Props) {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 3 }}>
-      <Paper sx={{ maxWidth: 800, mx: 'auto', p: { xs: 2, md: 4 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <CheckCircleIcon color="success" sx={{ fontSize: 40 }} />
-          <Typography variant="h4">Test Complete</Typography>
-        </Box>
-
-        <Typography variant="h6" gutterBottom>
-          {output.test_title}
-        </Typography>
+    <div className="page-shell">
+      <div className="page-flow page-flow--narrow">
+        <section className="flow-hero">
+          <p className="utility-text">Examination Complete</p>
+          <h1>Test Complete</h1>
+          <p className="flow-emphasis">{output.test_title}</p>
+        </section>
 
         {grading && (
-          <Box
-            sx={{
-              my: 3,
-              p: 3,
-              borderRadius: 3,
-              bgcolor: 'primary.main',
-              color: 'primary.contrastText',
-              textAlign: 'center',
-            }}
-          >
-            <Typography variant="h3" sx={{ fontWeight: 700 }}>
-              {grading.percentage}%
-            </Typography>
-            <Typography variant="body1">
+          <section className="flow-block flow-block--score">
+            <p className="score-display">{grading.percentage}%</p>
+            <p className="utility-text">
               {grading.score} / {grading.max_score} points
-            </Typography>
-          </Box>
+            </p>
+          </section>
         )}
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 2, my: 3 }}>
-          <Stat label="Total Questions" value={output.metadata.total_questions} />
-          <Stat label="Answered" value={output.metadata.answered_count} />
-          <Stat label="Unanswered" value={output.metadata.unanswered_count} />
-          <Stat label="Flagged" value={output.metadata.flagged_count} />
-          <Stat
-            label="Time Spent"
-            value={`${Math.floor(output.metadata.time_spent_seconds / 60)}m ${output.metadata.time_spent_seconds % 60}s`}
-          />
-          <Stat
-            label="Submission"
-            value={output.submission_reason === 'timer_expired' ? 'Timer Expired' : 'User Submitted'}
-          />
-        </Box>
+        <section className="flow-block">
+          <table className="editorial-table">
+            <tbody>
+              <tr>
+                <th>Total Questions</th>
+                <td>{output.metadata.total_questions}</td>
+              </tr>
+              <tr>
+                <th>Answered</th>
+                <td>{output.metadata.answered_count}</td>
+              </tr>
+              <tr>
+                <th>Unanswered</th>
+                <td>{output.metadata.unanswered_count}</td>
+              </tr>
+              <tr>
+                <th>Flagged</th>
+                <td>{output.metadata.flagged_count}</td>
+              </tr>
+              <tr>
+                <th>Time Spent</th>
+                <td>
+                  {Math.floor(output.metadata.time_spent_seconds / 60)}m{' '}
+                  {output.metadata.time_spent_seconds % 60}s
+                </td>
+              </tr>
+              <tr>
+                <th>Submission</th>
+                <td>
+                  {output.submission_reason === 'timer_expired' ? 'Timer Expired' : 'User Submitted'}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </section>
 
         {grading && grading.results.some((r) => r.explanation) && (
-          <>
-            <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 600 }}>
-              Question Review
-            </Typography>
-            {grading.results
-              .filter((r) => r.explanation)
-              .map((r) => (
-                <Box
-                  key={r.q_number}
-                  sx={{
-                    mb: 2,
-                    p: 2,
-                    borderRadius: 3,
-                    bgcolor: 'action.hover',
-                    borderLeft: 4,
-                    borderColor: r.correct ? 'success.main' : 'error.main',
-                  }}
-                >
-                  <Box sx={{ display: 'flex', gap: 1, mb: 1, alignItems: 'center' }}>
-                    <Typography variant="subtitle2">Question {r.q_number}</Typography>
-                    {r.correct === true && <Chip label="Correct" size="small" color="success" />}
-                    {r.correct === false && <Chip label="Incorrect" size="small" color="error" />}
-                    <Chip label={`${r.points_earned}/${r.points_possible} pts`} size="small" variant="outlined" />
-                  </Box>
-                  <ContentRenderer content={r.explanation!} />
-                </Box>
-              ))}
-            <Divider sx={{ my: 3 }} />
-          </>
+          <section className="flow-block">
+            <h2>Question Review</h2>
+            <ol className="outline-list">
+              {grading.results
+                .filter((r) => r.explanation)
+                .map((r) => (
+                  <li key={r.q_number}>
+                    <div className="flow-block__head">
+                      <span style={{ fontWeight: 600 }}>Question {r.q_number}</span>
+                      {r.correct === true && <span className="tag tag--success">Correct</span>}
+                      {r.correct === false && <span className="tag tag--error">Incorrect</span>}
+                      <span className="tag">
+                        {r.points_earned}/{r.points_possible} pts
+                      </span>
+                    </div>
+                    <ContentRenderer content={r.explanation!} />
+                  </li>
+                ))}
+            </ol>
+          </section>
         )}
 
-        <Typography variant="subtitle2" gutterBottom>
-          Response JSON
-        </Typography>
-        <Box
-          component="pre"
-          sx={{
-            bgcolor: 'action.hover',
-            p: 2,
-            borderRadius: 3,
-            overflow: 'auto',
-            maxHeight: 300,
-            fontSize: '0.8rem',
-            fontFamily: 'monospace',
-            mb: 2,
-          }}
-        >
-          {jsonString}
-        </Box>
+        <section className="flow-block">
+          <p className="utility-text field-label">Response JSON</p>
+          <pre className="code-block">{jsonString}</pre>
+          <div className="flow-actions">
+            <button type="button" className="btn" onClick={handleCopy}>
+              Copy JSON
+            </button>
+            <button type="button" className="btn" onClick={handleDownload}>
+              Download JSON
+            </button>
+            <button type="button" className="btn" onClick={handleSave}>
+              Save to File
+            </button>
+            <button type="button" className="btn btn-primary flow-actions__end" onClick={onNewTest}>
+              New Test →
+            </button>
+          </div>
+        </section>
+      </div>
 
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-          <Button startIcon={<ContentCopyIcon />} onClick={handleCopy} variant="outlined">
-            Copy JSON
-          </Button>
-          <Button startIcon={<DownloadIcon />} onClick={handleDownload} variant="outlined">
-            Download JSON
-          </Button>
-          <Button startIcon={<SaveIcon />} onClick={handleSave} variant="outlined">
-            Save to File
-          </Button>
-          <Button startIcon={<RestartAltIcon />} onClick={onNewTest} variant="contained" sx={{ ml: 'auto' }}>
-            New Test
-          </Button>
-        </Box>
-      </Paper>
-
-      <Snackbar open={copied} autoHideDuration={3000} onClose={() => setCopied(false)}>
-        <Alert severity="success">JSON copied to clipboard</Alert>
-      </Snackbar>
-    </Box>
-  );
-}
-
-function Stat({ label, value }: { label: string; value: string | number }) {
-  return (
-    <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 3 }}>
-      <Typography variant="caption" color="text.secondary">
-        {label}
-      </Typography>
-      <Typography variant="body1" sx={{ fontWeight: 600 }}>
-        {value}
-      </Typography>
-    </Box>
+      {copied && (
+        <div className="notice notice--success notice--fixed" role="status">
+          JSON copied to clipboard
+        </div>
+      )}
+    </div>
   );
 }

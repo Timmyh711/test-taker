@@ -1,18 +1,4 @@
-import {
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
-  Box,
-  Typography,
-  IconButton,
-} from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
+import { useEffect, useRef } from 'react';
 import type { AccentColor, ThemeMode } from '../types/test';
 import { ACCENT_OPTIONS } from '../theme/theme';
 
@@ -33,52 +19,69 @@ export function SettingsDialog({
   onThemeModeChange,
   onAccentChange,
 }: Props) {
-  return (
-    <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
-      <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        Settings
-        <IconButton onClick={onClose} aria-label="Close settings" size="small">
-          <CloseIcon />
-        </IconButton>
-      </DialogTitle>
-      <DialogContent>
-        <FormControl fullWidth sx={{ mb: 3, mt: 1 }}>
-          <InputLabel id="theme-mode-label">Appearance</InputLabel>
-          <Select
-            labelId="theme-mode-label"
-            value={themeMode}
-            label="Appearance"
-            onChange={(e) => onThemeModeChange(e.target.value as ThemeMode)}
-          >
-            <MenuItem value="dark">Dark</MenuItem>
-            <MenuItem value="light">Light</MenuItem>
-            <MenuItem value="auto">Auto (system)</MenuItem>
-          </Select>
-        </FormControl>
+  const dialogRef = useRef<HTMLDialogElement>(null);
 
-        <Typography variant="subtitle2" gutterBottom>
-          Accent color
-        </Typography>
-        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+  useEffect(() => {
+    const dialog = dialogRef.current;
+    if (!dialog) return;
+    if (open && !dialog.open) dialog.showModal();
+    if (!open && dialog.open) dialog.close();
+  }, [open]);
+
+  return (
+    <dialog
+      ref={dialogRef}
+      className="editorial-dialog"
+      onClose={onClose}
+      onClick={(e) => {
+        if (e.target === dialogRef.current) onClose();
+      }}
+    >
+      <div className="editorial-dialog__header">
+        <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Settings</h2>
+        <button type="button" className="btn btn-text" onClick={onClose} aria-label="Close settings">
+          ✕
+        </button>
+      </div>
+
+      <div className="editorial-dialog__body">
+        <label htmlFor="theme-mode" className="utility-text" style={{ display: 'block', marginBottom: '0.5rem' }}>
+          Appearance
+        </label>
+        <select
+          id="theme-mode"
+          value={themeMode}
+          onChange={(e) => onThemeModeChange(e.target.value as ThemeMode)}
+          style={{ marginBottom: '1.5rem' }}
+        >
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+          <option value="auto">Auto (system)</option>
+        </select>
+
+        <p className="utility-text" style={{ margin: '0 0 0.75rem' }}>
+          Accent colour
+        </p>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           {ACCENT_OPTIONS.map((opt) => (
-            <Button
+            <button
               key={opt.id}
-              variant={accentColor === opt.id ? 'contained' : 'outlined'}
+              type="button"
+              className={`btn btn-accent ${accentColor === opt.id ? 'is-active' : ''}`}
               onClick={() => onAccentChange(opt.id)}
-              sx={{
-                minWidth: 80,
-                borderColor: opt.color,
-                ...(accentColor === opt.id ? { bgcolor: opt.color } : { color: opt.color }),
-              }}
+              style={accentColor !== opt.id ? { borderColor: opt.color, color: opt.color } : undefined}
             >
               {opt.label}
-            </Button>
+            </button>
           ))}
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Done</Button>
-      </DialogActions>
-    </Dialog>
+        </div>
+      </div>
+
+      <div className="editorial-dialog__footer">
+        <button type="button" className="btn btn-primary" onClick={onClose}>
+          Done
+        </button>
+      </div>
+    </dialog>
   );
 }

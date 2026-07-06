@@ -1,5 +1,3 @@
-import { TextField } from '@mui/material';
-
 interface Props {
   value: string;
   onChange: (value: string) => void;
@@ -18,18 +16,13 @@ export function Numeric({ value, onChange, integerOnly, decimalPlaces }: Props) 
   };
 
   return (
-    <TextField
-      fullWidth
+    <input
       type="number"
       value={value}
       onChange={(e) => handleChange(e.target.value)}
       placeholder="Enter a number"
-      slotProps={{
-        htmlInput: {
-          'aria-label': 'Numeric answer',
-          step: integerOnly ? 1 : decimalPlaces !== undefined ? Math.pow(10, -decimalPlaces) : 'any',
-        },
-      }}
+      aria-label="Numeric answer"
+      step={integerOnly ? 1 : decimalPlaces !== undefined ? Math.pow(10, -decimalPlaces) : 'any'}
     />
   );
 }

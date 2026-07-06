@@ -1,7 +1,4 @@
 import { useCallback, useState } from 'react';
-import { Box, AppBar, Toolbar, Typography, Chip, Button } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import VisibilityIcon from '@mui/icons-material/Visibility';
 import type { Answer, TestHistoryEntry } from '../types/test';
 import { outputToReadOnlySession } from '../utils/history';
 import { getDefaultAnswer, getQuestionStatus } from '../utils/answers';
@@ -38,55 +35,57 @@ export function ReadOnlyTestView({ entry, onBack }: Props) {
 
   if (!currentQuestion) return null;
 
+  const isLongResponse =
+    currentQuestion.question_type === 'paragraph' || currentQuestion.question_type === 'essay';
+
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100vh' }}>
-      <AppBar
-        position="static"
-        elevation={0}
-        sx={{ bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider' }}
-      >
-        <Toolbar sx={{ gap: 2 }}>
-          <Button startIcon={<ArrowBackIcon />} onClick={onBack} color="inherit">
-            Back
-          </Button>
-          <Typography variant="h6" sx={{ flexGrow: 1 }} noWrap>
-            {entry.test_title}
-          </Typography>
-          {grading && (
-            <Chip
-              label={`${grading.score}/${grading.max_score} (${grading.percentage}%)`}
-              size="small"
-              color="primary"
-            />
-          )}
-          <Chip icon={<VisibilityIcon />} label="Read-only" size="small" variant="outlined" />
-        </Toolbar>
-      </AppBar>
+    <div className="test-shell">
+      <header className="test-topbar">
+        <div style={{ padding: '0.875rem 1.5rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+            <button type="button" className="btn btn-text" onClick={onBack}>
+              ← Back
+            </button>
+            <h1 style={{ flex: 1, margin: 0, fontSize: '1.125rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+              {entry.test_title}
+            </h1>
+            {grading && (
+              <span className="tag tag--accent">
+                {grading.score}/{grading.max_score} ({grading.percentage}%)
+              </span>
+            )}
+            <span className="tag">Read-only</span>
+          </div>
+          <p className="utility-text" style={{ margin: '0.75rem 0 0' }}>
+            Completed {formatHistoryDate(entry.completed_at)} · {entry.answered_count}/{entry.total_questions} answered ·{' '}
+            {formatDuration(entry.time_spent_seconds)}
+          </p>
+        </div>
+      </header>
 
-      <Box sx={{ px: 3, py: 1.5, bgcolor: 'action.hover', borderBottom: 1, borderColor: 'divider' }}>
-        <Typography variant="body2" color="text.secondary">
-          Completed {formatHistoryDate(entry.completed_at)} · {entry.answered_count}/{entry.total_questions} answered · {formatDuration(entry.time_spent_seconds)}
-        </Typography>
-      </Box>
-
-      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <Sidebar
-          questions={questions}
-          currentIndex={currentIndex}
-          statuses={statuses}
-          onSelect={setCurrentIndex}
-          grades={grading?.results}
-        />
-        <Box sx={{ flex: 1, overflow: 'auto' }}>
-          <QuestionPanel
-            question={currentQuestion}
-            answer={getAnswer(currentQuestion.q_number)}
-            onChange={() => {}}
-            readOnly
-            grade={getQuestionGrade(grading, currentQuestion.q_number)}
+      <main className="test-main">
+        <aside className="test-sidebar">
+          <Sidebar
+            questions={questions}
+            currentIndex={currentIndex}
+            statuses={statuses}
+            onSelect={setCurrentIndex}
+            grades={grading?.results}
           />
-        </Box>
-      </Box>
-    </Box>
+        </aside>
+        <section className={`test-panel${isLongResponse ? ' test-panel--long' : ''}`}>
+          <div className={isLongResponse ? 'test-panel__fill' : 'test-panel__scroll'}>
+            <QuestionPanel
+              question={currentQuestion}
+              answer={getAnswer(currentQuestion.q_number)}
+              onChange={() => {}}
+              readOnly
+              grade={getQuestionGrade(grading, currentQuestion.q_number)}
+              fillHeight={isLongResponse}
+            />
+          </div>
+        </section>
+      </main>
+    </div>
   );
 }

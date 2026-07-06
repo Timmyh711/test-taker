@@ -1,8 +1,3 @@
-import { Box, Button, IconButton, Tooltip } from '@mui/material';
-import SettingsIcon from '@mui/icons-material/Settings';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import HistoryIcon from '@mui/icons-material/History';
-
 interface Props {
   onOpenSettings: () => void;
   onBack?: () => void;
@@ -17,39 +12,22 @@ export function AppHeader({
   onHistory,
 }: Props) {
   return (
-    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-      <Box>
+    <header className="app-header">
+      <div className="app-header__nav">
         {onBack && (
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={onBack}
-            variant="outlined"
-            sx={{
-              color: 'text.primary',
-              borderColor: 'divider',
-              '&:hover': { borderColor: 'text.secondary', bgcolor: 'action.hover' },
-            }}
-            aria-label={backLabel}
-          >
-            {backLabel}
-          </Button>
+          <button type="button" className="btn btn-text" onClick={onBack} aria-label={backLabel}>
+            ← {backLabel}
+          </button>
         )}
         {onHistory && (
-          <Button
-            startIcon={<HistoryIcon />}
-            onClick={onHistory}
-            variant="outlined"
-            aria-label="Open test history"
-          >
+          <button type="button" className="btn btn-text" onClick={onHistory} aria-label="Open test history">
             Test History
-          </Button>
+          </button>
         )}
-      </Box>
-      <Tooltip title="Settings">
-        <IconButton onClick={onOpenSettings} aria-label="Open settings">
-          <SettingsIcon />
-        </IconButton>
-      </Tooltip>
-    </Box>
+      </div>
+      <button type="button" className="btn btn-text" onClick={onOpenSettings} aria-label="Open settings">
+        Settings
+      </button>
+    </header>
   );
 }

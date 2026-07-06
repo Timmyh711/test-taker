@@ -1,10 +1,3 @@
-import { Box, Button } from '@mui/material';
-import NavigateBeforeIcon from '@mui/icons-material/NavigateBefore';
-import NavigateNextIcon from '@mui/icons-material/NavigateNext';
-import FlagIcon from '@mui/icons-material/Flag';
-import LightbulbOutlinedIcon from '@mui/icons-material/LightbulbOutlined';
-import SendIcon from '@mui/icons-material/Send';
-
 interface Props {
   currentIndex: number;
   totalQuestions: number;
@@ -31,72 +24,56 @@ export function BottomControls({
   onSubmit,
 }: Props) {
   return (
-    <Box
-      sx={{
+    <div
+      style={{
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
-        p: 2,
-        borderTop: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'background.paper',
-        gap: 1,
+        gap: '0.75rem',
         flexWrap: 'wrap',
       }}
     >
-      <Button
-        startIcon={<NavigateBeforeIcon />}
-        onClick={onPrevious}
-        disabled={currentIndex === 0}
-        aria-label="Previous question"
-      >
-        Previous
-      </Button>
+      <button type="button" className="btn" onClick={onPrevious} disabled={currentIndex === 0} aria-label="Previous question">
+        ← Previous
+      </button>
 
-      <Box sx={{ display: 'flex', gap: 1 }}>
+      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
         {hasHint && onToggleHint && (
-          <Button
-            startIcon={<LightbulbOutlinedIcon />}
+          <button
+            type="button"
+            className={`btn ${hintVisible ? 'btn-primary' : ''}`}
             onClick={onToggleHint}
-            color={hintVisible ? 'info' : 'inherit'}
-            variant={hintVisible ? 'contained' : 'outlined'}
             aria-label={hintVisible ? 'Hide hint' : 'Show hint'}
             aria-pressed={hintVisible}
           >
             {hintVisible ? 'Hide Hint' : 'Hint'}
-          </Button>
+          </button>
         )}
-        <Button
-          startIcon={<FlagIcon />}
+        <button
+          type="button"
+          className={`btn ${isFlagged ? 'btn-primary' : ''}`}
           onClick={onFlag}
-          color={isFlagged ? 'error' : 'inherit'}
-          variant={isFlagged ? 'contained' : 'outlined'}
           aria-label={isFlagged ? 'Unflag question' : 'Flag question'}
           aria-pressed={isFlagged}
         >
-          {isFlagged ? 'Flagged' : 'Flag'}
-        </Button>
+          {isFlagged ? '⚑ Flagged' : 'Flag'}
+        </button>
         {currentIndex === totalQuestions - 1 && (
-          <Button
-            startIcon={<SendIcon />}
-            onClick={onSubmit}
-            variant="contained"
-            color="primary"
-            aria-label="Submit test"
-          >
-            Submit Test
-          </Button>
+          <button type="button" className="btn btn-primary" onClick={onSubmit} aria-label="Submit test">
+            Submit Test →
+          </button>
         )}
-      </Box>
+      </div>
 
-      <Button
-        endIcon={<NavigateNextIcon />}
+      <button
+        type="button"
+        className="btn"
         onClick={onNext}
         disabled={currentIndex >= totalQuestions - 1}
         aria-label="Next question"
       >
-        Next
-      </Button>
-    </Box>
+        Next →
+      </button>
+    </div>
   );
 }

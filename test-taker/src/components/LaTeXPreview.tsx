@@ -1,4 +1,3 @@
-import { Box, Typography } from '@mui/material';
 import { ContentRenderer } from './ContentRenderer';
 import { containsLatex } from '../utils/latex';
 
@@ -11,20 +10,18 @@ export function LaTeXPreview({ content, label = 'Preview' }: Props) {
   if (!content.trim() || !containsLatex(content)) return null;
 
   return (
-    <Box
-      sx={{
-        mt: 1.5,
-        p: 1.5,
-        borderRadius: 1,
-        border: '1px solid',
-        borderColor: 'divider',
-        bgcolor: 'action.hover',
+    <div
+      style={{
+        marginTop: '1rem',
+        padding: '1rem',
+        border: '1px solid var(--border-color)',
+        background: 'var(--bg-primary)',
       }}
     >
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.5 }}>
+      <p className="utility-text" style={{ margin: '0 0 0.5rem' }}>
         {label}
-      </Typography>
+      </p>
       <ContentRenderer content={content} />
-    </Box>
+    </div>
   );
 }

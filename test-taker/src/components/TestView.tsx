@@ -21,17 +21,6 @@ interface Props {
   onExitHome: () => void;
 }
 
-/**
- * TestView — Editorial Design Implementation
- *
- * Layout Architecture:
- * - Top bar: Sharp 1px border, navigation + timer
- * - Main content: Vertical divider separates left sidebar (nav grid) from right panel (question)
- * - Sidebar: Small square question cells with sharp borders (no rounded navigation)
- * - Question panel: Clean serif typography, minimal styling
- * - Bottom controls: Text-only or border-only buttons
- * - Pause overlay: Semi-transparent, minimal text
- */
 export function TestView({
   session,
   setAnswer,
@@ -96,20 +85,12 @@ export function TestView({
 
   if (!currentQuestion) return null;
 
+  const isLongResponse =
+    currentQuestion.question_type === 'paragraph' || currentQuestion.question_type === 'essay';
+
   return (
-    <div className="flex flex-col w-full h-screen bg-editorial-50 dark:bg-editorial-900">
-      {/* Top Bar — Sharp border, navigation + title + timer */}
-      <header
-        className="flex-shrink-0 border-b border-editorial-light dark:border-editorial-dark bg-white dark:bg-gray-950 px-6 py-4"
-        style={{
-          borderBottom: 'var(--border-light)',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '1rem',
-          fontFamily: 'var(--font-serif)',
-        }}
-      >
+    <div className="test-shell">
+      <header className="test-topbar">
         <TopBar
           session={session}
           onTimerExpire={onTimerExpire}
@@ -118,17 +99,15 @@ export function TestView({
         />
       </header>
 
-      {/* Main content: Split layout with vertical divider */}
       <main
-        className="flex flex-1 overflow-hidden"
+        className="test-main"
         style={{
-          opacity: isPaused ? 0.4 : 1,
+          opacity: isPaused ? 0.45 : 1,
           pointerEvents: isPaused ? 'none' : 'auto',
           transition: 'opacity 0.2s ease',
         }}
       >
-        {/* Left Sidebar — Question Navigation Grid */}
-        <aside className="flex-shrink-0 border-r border-editorial-light dark:border-editorial-dark w-40 overflow-y-auto bg-white dark:bg-gray-950">
+        <aside className="test-sidebar">
           <Sidebar
             questions={questions}
             currentIndex={currentIndex}
@@ -137,20 +116,18 @@ export function TestView({
           />
         </aside>
 
-        {/* Right Panel — Question Content */}
-        <section className="flex-1 flex flex-col overflow-hidden bg-editorial-50 dark:bg-editorial-900">
-          {/* Question content area */}
-          <div className="flex-1 overflow-y-auto">
+        <section className={`test-panel${isLongResponse ? ' test-panel--long' : ''}`}>
+          <div className={isLongResponse ? 'test-panel__fill' : 'test-panel__scroll'}>
             <QuestionPanel
               question={currentQuestion}
               answer={getAnswer(currentQuestion.q_number)}
               onChange={(a) => setAnswer(currentQuestion.q_number, a)}
               showHint={hintVisible}
+              fillHeight={isLongResponse}
             />
           </div>
 
-          {/* Bottom Controls — Footer with navigation */}
-          <footer className="flex-shrink-0 border-t border-editorial-light dark:border-editorial-dark bg-white dark:bg-gray-950 px-6 py-4">
+          <footer className="test-footer">
             <BottomControls
               currentIndex={currentIndex}
               totalQuestions={questions.length}
@@ -167,7 +144,6 @@ export function TestView({
         </section>
       </main>
 
-      {/* Pause Overlay — Semi-transparent, minimal */}
       <PausedOverlay session={session} onResume={onTogglePause} />
     </div>
   );

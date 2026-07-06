@@ -1,8 +1,5 @@
-import { Box, Paper, Typography } from '@mui/material';
-import HistoryIcon from '@mui/icons-material/History';
 import type { TestHistoryEntry } from '../types/test';
 import { AppHeader } from './AppHeader';
-import { HistoryList } from './HistoryList';
 
 interface Props {
   history: TestHistoryEntry[];
@@ -13,22 +10,72 @@ interface Props {
 
 export function HistoryScreen({ history, onSelect, onBack, onOpenSettings }: Props) {
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4, px: 3 }}>
-      <Box sx={{ maxWidth: 700, mx: 'auto' }}>
+    <div className="page-shell">
+      <div className="page-flow page-flow--narrow">
         <AppHeader onOpenSettings={onOpenSettings} onBack={onBack} />
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-          <HistoryIcon color="primary" />
-          <Typography variant="h5">
-            Test History
-          </Typography>
-        </Box>
-        <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          {history.length} completed test{history.length !== 1 ? 's' : ''}. Click any test to view responses (read-only).
-        </Typography>
-        <Paper sx={{ p: 3 }}>
-          <HistoryList entries={history} onSelect={onSelect} />
-        </Paper>
-      </Box>
-    </Box>
+
+        <section className="flow-hero">
+          <p className="utility-text">Archive</p>
+          <h1>Test History</h1>
+          <p className="flow-lead">
+            {history.length} completed test{history.length !== 1 ? 's' : ''}. Select any entry to view responses in
+            read-only mode.
+          </p>
+        </section>
+
+        <section className="flow-block">
+          <table className="editorial-table editorial-table--interactive">
+            <thead>
+              <tr>
+                <th>Test</th>
+                <th>Completed</th>
+                <th>Answered</th>
+                <th>Duration</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {history.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="flow-lead">
+                    No completed tests yet.
+                  </td>
+                </tr>
+              ) : (
+                history.map((entry) => (
+                  <tr
+                    key={entry.id}
+                    onClick={() => onSelect(entry.id)}
+                    tabIndex={0}
+                    role="button"
+                    onKeyDown={(e) => e.key === 'Enter' && onSelect(entry.id)}
+                  >
+                    <td className="flow-emphasis">{entry.test_title}</td>
+                    <td>
+                      {new Date(entry.completed_at).toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </td>
+                    <td>
+                      {entry.answered_count}/{entry.total_questions}
+                    </td>
+                    <td>
+                      {Math.floor(entry.time_spent_seconds / 60)}m {entry.time_spent_seconds % 60}s
+                    </td>
+                    <td>
+                      <span className="tag">
+                        {entry.submission_reason === 'timer_expired' ? 'Timer expired' : 'Submitted'}
+                      </span>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </section>
+      </div>
+    </div>
   );
 }

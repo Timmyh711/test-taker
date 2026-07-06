@@ -1,4 +1,3 @@
-import { Box, Chip, Typography } from '@mui/material';
 import type { Answer, Question, QuestionGrade } from '../types/test';
 import { ContentRenderer, QuestionHint, QuestionMedia } from './ContentRenderer';
 import { MultipleChoice } from './questions/MultipleChoice';
@@ -10,6 +9,7 @@ import { RichTextEditor } from './questions/RichTextEditor';
 import { Matching } from './questions/Matching';
 import { Ordering } from './questions/Ordering';
 import { AnswerDisplay } from './AnswerDisplay';
+import { SplitPane } from './SplitPane';
 
 interface Props {
   question: Question;
@@ -18,9 +18,56 @@ interface Props {
   readOnly?: boolean;
   grade?: QuestionGrade;
   showHint?: boolean;
+  fillHeight?: boolean;
 }
 
-export function QuestionPanel({ question, answer, onChange, readOnly, grade, showHint }: Props) {
+function isLongResponseType(type: Question['question_type']): boolean {
+  return type === 'paragraph' || type === 'essay';
+}
+
+function QuestionMeta({ question }: { question: Question }) {
+  return (
+    <header className="question-meta">
+      <div className="question-meta__row">
+        <h2 className="question-meta__title">Question {question.q_number}</h2>
+        {question.required && <span className="tag tag--accent">Required</span>}
+        {question.points !== undefined && <span className="tag">{question.points} pts</span>}
+      </div>
+    </header>
+  );
+}
+
+function QuestionPrompt({
+  question,
+  showHint,
+  readOnly,
+}: {
+  question: Question;
+  showHint?: boolean;
+  readOnly?: boolean;
+}) {
+  return (
+    <>
+      <ContentRenderer content={question.question_text} latexEnabled={question.latex_enabled !== false} />
+      <QuestionMedia imageUrl={question.image_url} audioUrl={question.audio_url} videoUrl={question.video_url} />
+      {question.hint && !readOnly && showHint && (
+        <QuestionHint hint={question.hint} latexEnabled={question.latex_enabled !== false} />
+      )}
+    </>
+  );
+}
+
+export function QuestionPanel({
+  question,
+  answer,
+  onChange,
+  readOnly,
+  grade,
+  showHint,
+  fillHeight,
+}: Props) {
+  const longResponse = isLongResponseType(question.question_type);
+
   const renderAnswer = () => {
     if (readOnly) {
       return <AnswerDisplay question={question} answer={answer} grade={grade} />;
@@ -29,19 +76,11 @@ export function QuestionPanel({ question, answer, onChange, readOnly, grade, sho
     switch (question.question_type) {
       case 'multiple_choice':
         return (
-          <MultipleChoice
-            choices={question.choices ?? []}
-            value={answer as string}
-            onChange={onChange}
-          />
+          <MultipleChoice choices={question.choices ?? []} value={answer as string} onChange={onChange} />
         );
       case 'multiple_select':
         return (
-          <MultipleSelect
-            choices={question.choices ?? []}
-            value={answer as string[]}
-            onChange={onChange}
-          />
+          <MultipleSelect choices={question.choices ?? []} value={answer as string[]} onChange={onChange} />
         );
       case 'true_false':
         return (
@@ -54,16 +93,15 @@ export function QuestionPanel({ question, answer, onChange, readOnly, grade, sho
       case 'short_answer':
         return <ShortAnswer value={answer as string} onChange={onChange} />;
       case 'paragraph':
-        return (
-          <RichTextEditor value={answer as string} onChange={onChange} minHeight={150} />
-        );
+        return <RichTextEditor value={answer as string} onChange={onChange} minHeight={200} fillHeight />;
       case 'essay':
         return (
           <RichTextEditor
             value={answer as string}
             onChange={onChange}
-            minHeight={300}
+            minHeight={280}
             autosaveInterval={3000}
+            fillHeight
           />
         );
       case 'numeric':
@@ -86,54 +124,46 @@ export function QuestionPanel({ question, answer, onChange, readOnly, grade, sho
         );
       case 'ordering':
         return (
-          <Ordering
-            items={question.items ?? []}
-            value={answer as string[]}
-            onChange={onChange}
-          />
+          <Ordering items={question.items ?? []} value={answer as string[]} onChange={onChange} />
         );
       default:
-        return <Typography color="error">Unsupported question type</Typography>;
+        return <p className="text-error">Unsupported question type</p>;
     }
   };
 
+  if (longResponse && fillHeight) {
+    return (
+      <div className="question-panel question-panel--split">
+        <SplitPane
+          storageKey="test-taker-split-ratio"
+          left={
+            <div className="question-panel__prompt">
+              <QuestionMeta question={question} />
+              <QuestionPrompt question={question} showHint={showHint} readOnly={readOnly} />
+            </div>
+          }
+          right={
+            <div className="question-panel__response" role="group" aria-label="Answer area">
+              <p className="utility-text question-panel__response-label">Your response</p>
+              {renderAnswer()}
+            </div>
+          }
+        />
+      </div>
+    );
+  }
+
   return (
-    <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 900, mx: 'auto' }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Typography variant="h6" color="primary">
-          Question {question.q_number}
-        </Typography>
-        {question.required && (
-          <Chip label="Required" size="small" color="primary" variant="outlined" />
-        )}
-        {question.points !== undefined && (
-          <Chip label={`${question.points} pts`} size="small" variant="outlined" />
-        )}
-      </Box>
+    <article className="question-panel question-panel--standard">
+      <QuestionMeta question={question} />
+      <QuestionPrompt question={question} showHint={showHint} readOnly={readOnly} />
 
-      <ContentRenderer
-        content={question.question_text}
-        latexEnabled={question.latex_enabled !== false}
-      />
-
-      <QuestionMedia
-        imageUrl={question.image_url}
-        audioUrl={question.audio_url}
-        videoUrl={question.video_url}
-      />
-
-      {question.hint && !readOnly && showHint && (
-        <QuestionHint hint={question.hint} latexEnabled={question.latex_enabled !== false} />
-      )}
-
-      <Box sx={{ mt: 3 }} role="group" aria-label="Answer area">
+      <div className="question-panel__answer" role="group" aria-label="Answer area">
         {!readOnly && question.question_type === 'multiple_select' && (
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-            Select all that apply
-          </Typography>
+          <p className="utility-text question-panel__hint-line">Select all that apply</p>
         )}
         {renderAnswer()}
-      </Box>
-    </Box>
+      </div>
+    </article>
   );
 }

@@ -1,29 +1,4 @@
 import { useState } from 'react';
-import {
-  Box,
-  Button,
-  Paper,
-  TextField,
-  Typography,
-  Alert,
-  AlertTitle,
-  List,
-  ListItem,
-  ListItemText,
-  Card,
-  CardContent,
-  CardActions,
-  Chip,
-  Stack,
-  Divider,
-} from '@mui/material';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import ContentPasteIcon from '@mui/icons-material/ContentPaste';
-import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import DeleteOutlinedIcon from '@mui/icons-material/DeleteOutlined';
-import HistoryIcon from '@mui/icons-material/History';
-import PauseCircleOutlinedIcon from '@mui/icons-material/PauseCircleOutlined';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import type { SavedSession, TestData, TestHistoryEntry } from '../types/test';
 import { validateTestJson } from '../utils/validation';
 import { getGreeting } from '../utils/greeting';
@@ -120,231 +95,123 @@ export function HomeScreen({
   const resumeTimer = pendingResume ? getTimerState(pendingResume) : null;
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
-      <Box sx={{ maxWidth: 960, mx: 'auto', px: { xs: 2, sm: 3 }, py: { xs: 3, sm: 4 } }}>
+    <div className="page-shell">
+      <div className="page-flow">
         <AppHeader onOpenSettings={onOpenSettings} onHistory={onViewHistory} />
 
-        {/* Hero */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: { xs: 2.5, sm: 3 },
-            mb: 3,
-            bgcolor: 'background.paper',
-            border: 1,
-            borderColor: 'divider',
-          }}
-        >
-          <Typography variant="h4" color="primary" sx={{ mb: 0.5 }}>
-            {getGreeting()}
-          </Typography>
-          <Typography variant="body1" color="text.secondary">
-            Import a test JSON below, or pick up where you left off.
-          </Typography>
-        </Paper>
+        <section className="flow-hero">
+          <p className="utility-text">Test Taker</p>
+          <h1>{getGreeting()}</h1>
+          <p className="flow-lead">Import a test JSON below, or pick up where you left off.</p>
+        </section>
 
-        {/* Resume & History row */}
-        {(pendingResume || recentHistory.length > 0) && (
-          <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} sx={{ mb: 3 }}>
-            {pendingResume && (
-              <Card
-                variant="outlined"
-                sx={{
-                  flex: 1,
-                  borderColor: 'primary.main',
-                  bgcolor: 'background.paper',
-                }}
-              >
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <PauseCircleOutlinedIcon color="primary" fontSize="small" />
-                    <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                      Resume Test
-                    </Typography>
-                    {resumeTimer?.isPaused && (
-                      <Chip label="Paused" size="small" color="warning" />
-                    )}
-                  </Box>
-                  <Typography variant="body1" sx={{ fontWeight: 600, mb: 0.5 }}>
-                    {pendingResume.test.title}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {resumeAnswered}/{pendingResume.test.questions.length} answered · Started {formatDate(pendingResume.startedAt)}
-                  </Typography>
-                  {resumeTimer?.hasTimer && (
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 1 }}>
-                      <AccessTimeIcon fontSize="small" color="action" />
-                      <Typography variant="body2" color="text.secondary">
-                        {resumeTimer.isExpired
-                          ? 'Time expired'
-                          : formatTime(resumeTimer.remainingMs) + ' left'}
-                      </Typography>
-                    </Box>
-                  )}
-                </CardContent>
-                <CardActions sx={{ px: 2, pb: 2, pt: 0 }}>
-                  <Button variant="contained" startIcon={<PlayArrowIcon />} onClick={onResume}>
-                    Resume
-                  </Button>
-                  <Button
-                    variant="outlined"
-                    startIcon={<DeleteOutlinedIcon />}
-                    onClick={onDiscard}
-                    sx={{ color: 'text.primary', borderColor: 'divider' }}
-                  >
-                    Discard
-                  </Button>
-                </CardActions>
-              </Card>
-            )}
+        {pendingResume && (
+          <section className="flow-block">
+            <div className="flow-block__head">
+              <h2>Resume Test</h2>
+              {resumeTimer?.isPaused && <span className="tag tag--accent">Paused</span>}
+            </div>
+            <p className="flow-emphasis">{pendingResume.test.title}</p>
+            <p className="utility-text">
+              {resumeAnswered}/{pendingResume.test.questions.length} answered · Started {formatDate(pendingResume.startedAt)}
+              {resumeTimer?.hasTimer &&
+                ` · ${resumeTimer.isExpired ? 'Time expired' : `${formatTime(resumeTimer.remainingMs)} remaining`}`}
+            </p>
+            <div className="flow-actions">
+              <button type="button" className="btn btn-primary" onClick={onResume}>
+                Resume →
+              </button>
+              <button type="button" className="btn" onClick={onDiscard}>
+                Discard
+              </button>
+            </div>
+          </section>
+        )}
 
-            {recentHistory.length > 0 && (
-              <Card variant="outlined" sx={{ flex: 1, bgcolor: 'background.paper' }}>
-                <CardContent>
-                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <HistoryIcon color="primary" fontSize="small" />
-                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                        Recent Tests
-                      </Typography>
-                    </Box>
-                    {history.length > HOME_HISTORY_LIMIT && (
-                      <Button size="small" onClick={onViewHistory}>
-                        View all
-                      </Button>
-                    )}
-                  </Box>
-                  <HistoryList entries={recentHistory} onSelect={onViewTest} />
-                </CardContent>
-              </Card>
-            )}
-          </Stack>
+        {recentHistory.length > 0 && (
+          <section className="flow-block">
+            <div className="flow-block__head">
+              <h2>Recent Tests</h2>
+              {history.length > HOME_HISTORY_LIMIT && (
+                <button type="button" className="btn btn-text" onClick={onViewHistory}>
+                  View all
+                </button>
+              )}
+            </div>
+            <HistoryList entries={recentHistory} onSelect={onViewTest} />
+          </section>
         )}
 
         {history.length === 0 && !pendingResume && (
-          <Paper
-            elevation={0}
-            sx={{
-              p: 3,
-              mb: 3,
-              textAlign: 'center',
-              bgcolor: 'background.paper',
-              border: 1,
-              borderColor: 'divider',
-            }}
-          >
-            <HistoryIcon sx={{ fontSize: 36, color: 'text.disabled', mb: 1 }} />
-            <Typography color="text.secondary" variant="body2">
+          <section className="flow-block flow-block--quiet">
+            <p className="flow-lead" style={{ margin: 0 }}>
               Complete a test to see it in your history.
-            </Typography>
-          </Paper>
+            </p>
+          </section>
         )}
 
-        {/* Import section */}
-        <Paper
-          elevation={0}
-          sx={{
-            p: { xs: 2, sm: 3 },
-            bgcolor: 'background.paper',
-            border: 1,
-            borderColor: 'divider',
-          }}
-        >
-          <Typography variant="h6" sx={{ mb: 0.5 }}>
-            Import New Test
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Paste JSON from your clipboard, upload a file, or type directly.
-          </Typography>
+        <section className="flow-block">
+          <h2>Import New Test</h2>
+          <p className="flow-lead">Paste JSON from your clipboard, upload a file, or type directly.</p>
 
-          <Box
-            sx={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              gap: 1,
-              mb: 1.5,
-              p: 1,
-              bgcolor: 'background.default',
-              borderRadius: 2,
-              border: 1,
-              borderColor: 'divider',
-            }}
-          >
-            <Button size="small" startIcon={<ContentPasteIcon />} onClick={handlePaste} variant="outlined">
+          <div className="toolbar-row">
+            <button type="button" className="btn" onClick={handlePaste}>
               Paste
-            </Button>
-            <Button size="small" variant="outlined" component="label" startIcon={<UploadFileIcon />}>
+            </button>
+            <label className="btn" style={{ cursor: 'pointer' }}>
               Upload File
               <input type="file" accept=".json,application/json" hidden onChange={handleFileUpload} />
-            </Button>
+            </label>
             {jsonText && (
-              <Button
-                size="small"
-                variant="text"
-                color="inherit"
+              <button
+                type="button"
+                className="btn btn-text toolbar-row__end"
                 onClick={() => {
                   setJsonText('');
                   setErrors([]);
                   setPasteMessage(null);
                 }}
-                sx={{ ml: 'auto', color: 'text.secondary' }}
               >
                 Clear
-              </Button>
+              </button>
             )}
-          </Box>
+          </div>
 
-          {pasteMessage && (
-            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-              {pasteMessage}
-            </Typography>
-          )}
+          {pasteMessage && <p className="utility-text">{pasteMessage}</p>}
 
-          <TextField
-            fullWidth
-            multiline
-            minRows={10}
-            maxRows={20}
+          <label htmlFor="test-json" className="utility-text field-label">
+            Test JSON
+          </label>
+          <textarea
+            id="test-json"
+            className="editorial-json"
             value={jsonText}
             onChange={(e) => {
               setJsonText(e.target.value);
               setPasteMessage(null);
             }}
             placeholder='{"title": "My Test", "questions": [...]}'
-            label="Test JSON"
-            sx={{
-              mb: 2,
-              '& .MuiInputBase-input': { fontFamily: 'monospace', fontSize: '0.85rem' },
-            }}
-            slotProps={{ htmlInput: { 'aria-label': 'Test JSON input' } }}
+            aria-label="Test JSON input"
           />
 
-          <Divider sx={{ mb: 2 }} />
-
-          <Button
-            variant="contained"
-            size="large"
-            startIcon={<UploadFileIcon />}
-            onClick={handleImport}
-            disabled={!jsonText.trim()}
-          >
-            Start Test
-          </Button>
+          <div className="flow-actions">
+            <button type="button" className="btn btn-primary" onClick={handleImport} disabled={!jsonText.trim()}>
+              Start Test →
+            </button>
+          </div>
 
           {errors.length > 0 && (
-            <Alert severity="error" sx={{ mt: 2 }}>
-              <AlertTitle>Validation Errors</AlertTitle>
-              <List dense disablePadding>
+            <div className="notice notice--error">
+              <p className="utility-text">Validation Errors</p>
+              <ul>
                 {errors.map((err, i) => (
-                  <ListItem key={i} disablePadding>
-                    <ListItemText primary={err} />
-                  </ListItem>
+                  <li key={i}>{err}</li>
                 ))}
-              </List>
-            </Alert>
+              </ul>
+            </div>
           )}
-        </Paper>
-      </Box>
-    </Box>
+        </section>
+      </div>
+    </div>
   );
 }

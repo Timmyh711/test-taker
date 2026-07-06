@@ -1,4 +1,3 @@
-import { Box, TextField, Typography } from '@mui/material';
 import { LaTeXPreview } from '../LaTeXPreview';
 
 interface Props {
@@ -8,18 +7,18 @@ interface Props {
 
 export function ShortAnswer({ value, onChange }: Props) {
   return (
-    <Box>
-      <TextField
-        fullWidth
+    <div>
+      <input
+        type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Enter your answer (LaTeX supported: $x^2$, $$\frac{a}{b}$$)"
-        slotProps={{ htmlInput: { 'aria-label': 'Short answer' } }}
+        aria-label="Short answer"
       />
-      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 0.5 }}>
+      <p className="utility-text" style={{ marginTop: '0.5rem' }}>
         Use $...$ for inline math or $$...$$ for display math.
-      </Typography>
+      </p>
       <LaTeXPreview content={value} />
-    </Box>
+    </div>
   );
 }

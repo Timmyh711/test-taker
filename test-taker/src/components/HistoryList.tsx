@@ -1,10 +1,3 @@
-import {
-  Box,
-  Chip,
-  Divider,
-  ListItemButton,
-  Typography,
-} from '@mui/material';
 import type { TestHistoryEntry } from '../types/test';
 
 interface Props {
@@ -30,37 +23,38 @@ export function formatDuration(seconds: number): string {
 
 export function HistoryList({ entries, onSelect }: Props) {
   if (entries.length === 0) {
-    return (
-      <Typography variant="body2" color="text.secondary">
-        No completed tests yet.
-      </Typography>
-    );
+    return <p style={{ color: 'var(--text-secondary)', margin: 0 }}>No completed tests yet.</p>;
   }
 
   return (
-    <Box>
-      {entries.map((entry, i) => (
-        <Box key={entry.id}>
-          {i > 0 && <Divider sx={{ my: 0.5 }} />}
-          <ListItemButton
+    <ul className="outline-list">
+      {entries.map((entry) => (
+        <li key={entry.id}>
+          <button
+            type="button"
             onClick={() => onSelect(entry.id)}
-            sx={{ py: 1.5, px: 0, flexDirection: 'column', alignItems: 'flex-start' }}
+            className="btn-text"
+            style={{
+              width: '100%',
+              textAlign: 'left',
+              border: 'none',
+              padding: 0,
+              cursor: 'pointer',
+              background: 'transparent',
+              color: 'inherit',
+            }}
           >
-            <Typography variant="body1" sx={{ fontWeight: 500 }}>
-              {entry.test_title}
-            </Typography>
-            <Typography variant="caption" color="text.secondary">
-              {formatHistoryDate(entry.completed_at)} · {entry.answered_count}/{entry.total_questions} answered · {formatDuration(entry.time_spent_seconds)}
-            </Typography>
-            <Chip
-              label={entry.submission_reason === 'timer_expired' ? 'Timer expired' : 'Submitted'}
-              size="small"
-              variant="outlined"
-              sx={{ mt: 0.5 }}
-            />
-          </ListItemButton>
-        </Box>
+            <p style={{ margin: '0 0 0.35rem', fontWeight: 600, fontSize: '1.0625rem' }}>{entry.test_title}</p>
+            <p className="utility-text" style={{ margin: '0 0 0.5rem' }}>
+              {formatHistoryDate(entry.completed_at)} · {entry.answered_count}/{entry.total_questions} answered ·{' '}
+              {formatDuration(entry.time_spent_seconds)}
+            </p>
+            <span className="tag">
+              {entry.submission_reason === 'timer_expired' ? 'Timer expired' : 'Submitted'}
+            </span>
+          </button>
+        </li>
       ))}
-    </Box>
+    </ul>
   );
 }

@@ -1,4 +1,3 @@
-import { Checkbox, FormControlLabel, FormGroup } from '@mui/material';
 import { ChoiceLabel } from '../ChoiceLabel';
 
 interface Props {
@@ -17,31 +16,26 @@ export function MultipleSelect({ choices, value, onChange }: Props) {
   };
 
   return (
-    <FormGroup>
-      {choices.map((choice, i) => (
-        <FormControlLabel
-          key={i}
-          control={
-            <Checkbox
-              checked={value.includes(choice)}
-              onChange={() => toggle(choice)}
-            />
-          }
-          label={<ChoiceLabel content={choice} />}
-          sx={{
-            mb: 1,
-            mx: 0,
-            px: 2,
-            py: 1,
-            borderRadius: 1,
-            border: '1px solid',
-            borderColor: value.includes(choice) ? 'primary.main' : 'divider',
-            bgcolor: value.includes(choice) ? 'action.selected' : 'transparent',
-            alignItems: 'flex-start',
-            '& .MuiFormControlLabel-label': { mt: 0.5 },
-          }}
-        />
-      ))}
-    </FormGroup>
+    <ul className="choice-list" role="group" aria-label="Answer choices">
+      {choices.map((choice, i) => {
+        const selected = value.includes(choice);
+        return (
+          <li key={i}>
+            <label className={`choice-item ${selected ? 'choice-item--selected' : ''}`}>
+              <input
+                type="checkbox"
+                checked={selected}
+                onChange={() => toggle(choice)}
+                className="sr-only"
+              />
+              <span className="choice-box" aria-hidden="true" />
+              <span className="choice-text">
+                <ChoiceLabel content={choice} />
+              </span>
+            </label>
+          </li>
+        );
+      })}
+    </ul>
   );
 }

@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import type { AppSettings, AccentColor, ThemeMode } from '../types/test';
-import { createAppTheme } from '../theme/theme';
+import { ACCENT_CSS } from '../theme/theme';
 import { DEFAULT_SETTINGS, loadSettings, resolveThemeMode, saveSettings } from '../utils/settings';
 
 export function useSettings() {
@@ -21,10 +21,12 @@ export function useSettings() {
     return () => mq.removeEventListener('change', update);
   }, [settings.themeMode]);
 
-  const theme = useMemo(
-    () => createAppTheme(resolvedMode, settings.accentColor),
-    [resolvedMode, settings.accentColor]
-  );
+  useEffect(() => {
+    const root = document.documentElement;
+    root.dataset.theme = resolvedMode;
+    root.dataset.accent = settings.accentColor;
+    root.style.setProperty('--accent', ACCENT_CSS[settings.accentColor]);
+  }, [resolvedMode, settings.accentColor]);
 
   const updateSettings = useCallback((patch: Partial<AppSettings>) => {
     setSettings((prev) => {
@@ -49,5 +51,5 @@ export function useSettings() {
     saveSettings(DEFAULT_SETTINGS);
   }, []);
 
-  return { settings, theme, resolvedMode, setThemeMode, setAccentColor, resetSettings };
+  return { settings, resolvedMode, setThemeMode, setAccentColor, resetSettings };
 }

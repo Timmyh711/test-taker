@@ -1,4 +1,4 @@
-import { Box, Chip, Typography } from '@mui/material';
+import type { CSSProperties } from 'react';
 import type { Answer, Question, QuestionGrade } from '../types/test';
 import { ContentRenderer } from './ContentRenderer';
 import { ChoiceLabel } from './ChoiceLabel';
@@ -10,15 +10,16 @@ interface Props {
   grade?: QuestionGrade;
 }
 
+const answerBlockStyle: CSSProperties = {
+  padding: '0.75rem 0',
+  borderBottom: '1px solid var(--border-color)',
+};
+
 export function AnswerDisplay({ question, answer, grade }: Props) {
   const answered = isAnswered(question, answer);
 
   if (!answered) {
-    return (
-      <Typography variant="body2" color="text.secondary" sx={{ fontStyle: 'italic' }}>
-        No answer provided
-      </Typography>
-    );
+    return <p style={{ color: 'var(--text-secondary)', fontStyle: 'italic', margin: 0 }}>No answer provided</p>;
   }
 
   const renderValue = () => {
@@ -28,113 +29,76 @@ export function AnswerDisplay({ question, answer, grade }: Props) {
         return <ChoiceLabel content={String(answer)} />;
       case 'multiple_select':
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <ul className="outline-list">
             {(answer as string[]).map((item, i) => (
-              <Box key={i} sx={{ px: 2, py: 1, borderRadius: 2, bgcolor: 'action.hover' }}>
+              <li key={i} style={answerBlockStyle}>
                 <ChoiceLabel content={item} />
-              </Box>
+              </li>
             ))}
-          </Box>
+          </ul>
         );
       case 'short_answer':
       case 'numeric':
-        return (
-          <Typography variant="body1" sx={{ px: 2, py: 1.5, borderRadius: 2, bgcolor: 'action.hover' }}>
-            {String(answer)}
-          </Typography>
-        );
+        return <p style={{ margin: 0, fontFamily: 'var(--font-mono)' }}>{String(answer)}</p>;
       case 'paragraph':
       case 'essay':
         return (
-          <Box
-            sx={{
-              px: 2,
-              py: 1.5,
-              borderRadius: 2,
-              bgcolor: 'action.hover',
-              '& p': { mb: 1 },
-            }}
+          <div
+            className="content-renderer"
+            style={{ padding: '0.75rem 0' }}
             dangerouslySetInnerHTML={{ __html: String(answer) }}
           />
         );
       case 'matching':
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          <ul className="outline-list">
             {Object.entries(answer as Record<string, string>).map(([left, right]) => (
-              <Box
-                key={left}
-                sx={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 1fr',
-                  gap: 1,
-                  px: 2,
-                  py: 1,
-                  borderRadius: 2,
-                  bgcolor: 'action.hover',
-                }}
-              >
+              <li key={left} style={{ ...answerBlockStyle, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                 <ChoiceLabel content={left} />
                 <ChoiceLabel content={right} />
-              </Box>
+              </li>
             ))}
-          </Box>
+          </ul>
         );
       case 'ordering':
         return (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+          <ol className="outline-list" style={{ listStyle: 'decimal', paddingLeft: '1.5rem' }}>
             {(answer as string[]).map((item, i) => (
-              <Box
-                key={i}
-                sx={{ display: 'flex', gap: 1, px: 2, py: 1, borderRadius: 2, bgcolor: 'action.hover' }}
-              >
-                <Typography variant="body2" color="text.secondary" sx={{ minWidth: 20 }}>
-                  {i + 1}.
-                </Typography>
+              <li key={i} style={{ padding: '0.5rem 0' }}>
                 <ChoiceLabel content={item} />
-              </Box>
+              </li>
             ))}
-          </Box>
+          </ol>
         );
       default:
-        return <Typography>{String(answer)}</Typography>;
+        return <p style={{ margin: 0 }}>{String(answer)}</p>;
     }
   };
 
   return (
-    <Box>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-        <Typography variant="subtitle2" color="text.secondary">
-          Your answer
-        </Typography>
-        {grade?.correct === true && <Chip label="Correct" size="small" color="success" />}
-        {grade?.correct === false && <Chip label="Incorrect" size="small" color="error" />}
-        {grade?.correct === null && <Chip label="Not graded" size="small" variant="outlined" />}
+    <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+        <span className="utility-text">Your answer</span>
+        {grade?.correct === true && <span className="tag tag--success">Correct</span>}
+        {grade?.correct === false && <span className="tag tag--error">Incorrect</span>}
+        {grade?.correct === null && <span className="tag">Not graded</span>}
         {grade && grade.points_possible > 0 && (
-          <Chip
-            label={`${grade.points_earned}/${grade.points_possible} pts`}
-            size="small"
-            variant="outlined"
-          />
+          <span className="tag">{grade.points_earned}/{grade.points_possible} pts</span>
         )}
-      </Box>
+      </div>
       {renderValue()}
       {grade?.explanation && (
-        <Box
-          sx={{
-            mt: 2,
-            p: 2,
-            borderRadius: 3,
-            bgcolor: 'action.hover',
-            borderLeft: 4,
-            borderColor: grade.correct ? 'success.main' : 'error.main',
+        <aside
+          className="hint-block"
+          style={{
+            marginTop: '1.5rem',
+            borderLeftColor: grade.correct ? '#2d5016' : '#7a1f1f',
           }}
         >
-          <Typography variant="subtitle2" sx={{ mb: 0.5, fontWeight: 600 }}>
-            Explanation
-          </Typography>
+          <div className="hint-block__title">Explanation</div>
           <ContentRenderer content={grade.explanation} />
-        </Box>
+        </aside>
       )}
-    </Box>
+    </div>
   );
 }
