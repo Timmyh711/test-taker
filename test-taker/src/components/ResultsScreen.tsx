@@ -1,3 +1,4 @@
+import { ArrowRight, Copy, Download, Save } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeTextFile } from '@tauri-apps/plugin-fs';
@@ -129,16 +130,20 @@ export function ResultsScreen({ output, onNewTest }: Props) {
           <pre className="code-block">{jsonString}</pre>
           <div className="flow-actions">
             <button type="button" className="btn" onClick={handleCopy}>
+              <Copy size={16} strokeWidth={2} aria-hidden />
               Copy JSON
             </button>
             <button type="button" className="btn" onClick={handleDownload}>
+              <Download size={16} strokeWidth={2} aria-hidden />
               Download JSON
             </button>
             <button type="button" className="btn" onClick={handleSave}>
+              <Save size={16} strokeWidth={2} aria-hidden />
               Save to File
             </button>
             <button type="button" className="btn btn-primary flow-actions__end" onClick={onNewTest}>
-              New Test →
+              New Test
+              <ArrowRight size={16} strokeWidth={2} aria-hidden />
             </button>
           </div>
         </section>

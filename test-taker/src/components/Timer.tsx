@@ -1,3 +1,4 @@
+import { Clock, Pause, Play } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import type { SavedSession } from '../types/test';
 import { formatTime, getTimerState } from '../utils/timer';
@@ -78,16 +79,16 @@ export function Timer({ session, onExpire, onTogglePause }: Props) {
             : `Time remaining: ${formatTime(state.remainingMs)}`
         }
       >
+        <Clock size={14} strokeWidth={2} aria-hidden />
         <span>{formatTime(state.remainingMs)}</span>
         {state.isPaused && <span className="utility-text">Paused</span>}
         <button
           type="button"
           onClick={onTogglePause}
           aria-label={state.isPaused ? 'Resume timer' : 'Pause timer'}
-          className="btn-text"
-          style={{ border: 'none', padding: '0 0.25rem', fontFamily: 'var(--font-mono)', fontSize: '0.875rem', cursor: 'pointer', background: 'transparent', color: 'inherit' }}
+          className="timer-readout__toggle"
         >
-          {state.isPaused ? '▶' : '⏸'}
+          {state.isPaused ? <Play size={14} strokeWidth={2} /> : <Pause size={14} strokeWidth={2} />}
         </button>
       </div>
 

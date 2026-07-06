@@ -1,3 +1,4 @@
+import { Play } from 'lucide-react';
 import { formatTime, getTimerState } from '../utils/timer';
 import type { SavedSession } from '../types/test';
 
@@ -32,7 +33,8 @@ export function PausedOverlay({ session, onResume }: Props) {
             {formatTime(timer.remainingMs)}
           </p>
         )}
-        <button type="button" className="btn btn-primary" onClick={onResume} autoFocus style={{ width: '100%' }}>
+        <button type="button" className="btn btn-primary btn--large" onClick={onResume} autoFocus style={{ width: '100%' }}>
+          <Play size={18} strokeWidth={2} aria-hidden />
           Resume Test
         </button>
       </div>

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { AppSettings, AccentColor, ThemeMode } from '../types/test';
-import { ACCENT_CSS } from '../theme/theme';
+import { getAccentCss } from '../theme/theme';
 import { DEFAULT_SETTINGS, loadSettings, resolveThemeMode, saveSettings } from '../utils/settings';
 
 export function useSettings() {
@@ -25,7 +25,7 @@ export function useSettings() {
     const root = document.documentElement;
     root.dataset.theme = resolvedMode;
     root.dataset.accent = settings.accentColor;
-    root.style.setProperty('--accent', ACCENT_CSS[settings.accentColor]);
+    root.style.setProperty('--accent', getAccentCss(resolvedMode, settings.accentColor));
   }, [resolvedMode, settings.accentColor]);
 
   const updateSettings = useCallback((patch: Partial<AppSettings>) => {

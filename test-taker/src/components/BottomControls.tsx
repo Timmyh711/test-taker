@@ -1,3 +1,11 @@
+import {
+  ChevronLeft,
+  ChevronRight,
+  Flag,
+  Lightbulb,
+  Send,
+} from 'lucide-react';
+
 interface Props {
   currentIndex: number;
   totalQuestions: number;
@@ -24,43 +32,45 @@ export function BottomControls({
   onSubmit,
 }: Props) {
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        gap: '0.75rem',
-        flexWrap: 'wrap',
-      }}
-    >
-      <button type="button" className="btn" onClick={onPrevious} disabled={currentIndex === 0} aria-label="Previous question">
-        ← Previous
+    <div className="bottom-controls">
+      <button
+        type="button"
+        className="btn"
+        onClick={onPrevious}
+        disabled={currentIndex === 0}
+        aria-label="Previous question"
+      >
+        <ChevronLeft size={16} strokeWidth={2} aria-hidden />
+        Previous
       </button>
 
-      <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+      <div className="bottom-controls__center">
         {hasHint && onToggleHint && (
           <button
             type="button"
-            className={`btn ${hintVisible ? 'btn-primary' : ''}`}
+            className={`btn${hintVisible ? ' btn-primary' : ''}`}
             onClick={onToggleHint}
             aria-label={hintVisible ? 'Hide hint' : 'Show hint'}
             aria-pressed={hintVisible}
           >
+            <Lightbulb size={16} strokeWidth={2} aria-hidden />
             {hintVisible ? 'Hide Hint' : 'Hint'}
           </button>
         )}
         <button
           type="button"
-          className={`btn ${isFlagged ? 'btn-primary' : ''}`}
+          className={`btn${isFlagged ? ' btn-primary' : ''}`}
           onClick={onFlag}
           aria-label={isFlagged ? 'Unflag question' : 'Flag question'}
           aria-pressed={isFlagged}
         >
-          {isFlagged ? '⚑ Flagged' : 'Flag'}
+          <Flag size={16} strokeWidth={2} aria-hidden />
+          {isFlagged ? 'Flagged' : 'Flag'}
         </button>
         {currentIndex === totalQuestions - 1 && (
           <button type="button" className="btn btn-primary" onClick={onSubmit} aria-label="Submit test">
-            Submit Test →
+            <Send size={16} strokeWidth={2} aria-hidden />
+            Submit
           </button>
         )}
       </div>
@@ -72,7 +82,8 @@ export function BottomControls({
         disabled={currentIndex >= totalQuestions - 1}
         aria-label="Next question"
       >
-        Next →
+        Next
+        <ChevronRight size={16} strokeWidth={2} aria-hidden />
       </button>
     </div>
   );

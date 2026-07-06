@@ -1,6 +1,6 @@
 # Test Taker JSON Format Reference
 
-Version **1.1.0** — This document describes the JSON format for importing tests into Test Taker and the output format for completed responses.
+Version **1.2.0** — This document describes the JSON format for importing tests into Test Taker and the output format for completed responses.
 
 ## Test JSON (Input)
 

@@ -1,3 +1,4 @@
+import { X } from 'lucide-react';
 import { useEffect, useRef } from 'react';
 import type { AccentColor, ThemeMode } from '../types/test';
 import { ACCENT_OPTIONS } from '../theme/theme';
@@ -40,7 +41,7 @@ export function SettingsDialog({
       <div className="editorial-dialog__header">
         <h2 style={{ margin: 0, fontSize: '1.25rem' }}>Settings</h2>
         <button type="button" className="btn btn-text" onClick={onClose} aria-label="Close settings">
-          ✕
+          <X size={18} strokeWidth={2} aria-hidden />
         </button>
       </div>
 

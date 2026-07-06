@@ -1,9 +1,11 @@
+import { ArrowLeft, Flag, Send } from 'lucide-react';
 import type { SavedSession } from '../types/test';
 import { isAnswered, getQuestionStatus } from '../utils/answers';
 import type { Answer } from '../types/test';
 import { formatTime, getTimerState } from '../utils/timer';
 import { QuestionNavGrid } from './QuestionNavGrid';
-import { statusColors } from '../theme/theme';
+import { getStatusColor } from '../theme/theme';
+import { useSettings } from '../hooks/useSettings';
 
 interface Props {
   session: SavedSession;
@@ -20,6 +22,8 @@ const STATUS_LABEL: Record<string, string> = {
 };
 
 export function ReviewScreen({ session, onBack, onSubmit, onJumpTo }: Props) {
+  const { resolvedMode } = useSettings();
+  const isDark = resolvedMode === 'dark';
   const questions = session.test.questions;
   const answered = questions.filter((q) =>
     isAnswered(q, session.responses[String(q.q_number)] as Answer | undefined)
@@ -89,9 +93,11 @@ export function ReviewScreen({ session, onBack, onSubmit, onJumpTo }: Props) {
                         {String(q.q_number).padStart(2, '0')}
                       </span>
                       Question {q.q_number}
-                      {session.flagged.includes(q.q_number) && ' ⚑'}
+                      {session.flagged.includes(q.q_number) && (
+                        <Flag size={12} strokeWidth={2} style={{ verticalAlign: '-1px', marginLeft: '0.35rem' }} aria-hidden />
+                      )}
                     </span>
-                    <span className="tag" style={{ color: statusColors[status], borderColor: statusColors[status] }}>
+                    <span className="tag" style={{ color: getStatusColor(status, isDark), borderColor: getStatusColor(status, isDark) }}>
                       {STATUS_LABEL[status]}
                     </span>
                   </button>
@@ -112,10 +118,12 @@ export function ReviewScreen({ session, onBack, onSubmit, onJumpTo }: Props) {
 
         <section className="flow-block flow-block--actions">
           <button type="button" className="btn" onClick={onBack}>
-            ← Back to Test
+            <ArrowLeft size={16} strokeWidth={2} aria-hidden />
+            Back to Test
           </button>
           <button type="button" className="btn btn-primary" onClick={onSubmit}>
-            Confirm Submit →
+            Confirm Submit
+            <Send size={16} strokeWidth={2} aria-hidden />
           </button>
         </section>
       </div>

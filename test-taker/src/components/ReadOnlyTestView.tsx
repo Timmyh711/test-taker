@@ -1,3 +1,4 @@
+import { ArrowLeft } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import type { Answer, TestHistoryEntry } from '../types/test';
 import { outputToReadOnlySession } from '../utils/history';
@@ -44,7 +45,8 @@ export function ReadOnlyTestView({ entry, onBack }: Props) {
         <div style={{ padding: '0.875rem 1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
             <button type="button" className="btn btn-text" onClick={onBack}>
-              ← Back
+              <ArrowLeft size={16} strokeWidth={2} aria-hidden />
+              Back
             </button>
             <h1 style={{ flex: 1, margin: 0, fontSize: '1.125rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {entry.test_title}

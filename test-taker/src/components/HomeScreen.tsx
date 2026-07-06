@@ -1,4 +1,11 @@
 import { useState } from 'react';
+import {
+  ClipboardPaste,
+  Clock,
+  Play,
+  Trash2,
+  Upload,
+} from 'lucide-react';
 import type { SavedSession, TestData, TestHistoryEntry } from '../types/test';
 import { validateTestJson } from '../utils/validation';
 import { getGreeting } from '../utils/greeting';
@@ -95,71 +102,71 @@ export function HomeScreen({
   const resumeTimer = pendingResume ? getTimerState(pendingResume) : null;
 
   return (
-    <div className="page-shell">
-      <div className="page-flow">
+    <div className="home-screen">
+      <div className="home-screen__toolbar">
         <AppHeader onOpenSettings={onOpenSettings} onHistory={onViewHistory} />
+      </div>
 
-        <section className="flow-hero">
+      <main className="home-screen__main">
+        <section className="home-hero">
           <p className="utility-text">Test Taker</p>
           <h1>{getGreeting()}</h1>
-          <p className="flow-lead">Import a test JSON below, or pick up where you left off.</p>
         </section>
 
         {pendingResume && (
-          <section className="flow-block">
-            <div className="flow-block__head">
-              <h2>Resume Test</h2>
+          <section className="home-resume" aria-label="Resume in-progress test">
+            <div className="home-resume__head">
+              <h2>Continue Your Test</h2>
               {resumeTimer?.isPaused && <span className="tag tag--accent">Paused</span>}
             </div>
-            <p className="flow-emphasis">{pendingResume.test.title}</p>
-            <p className="utility-text">
-              {resumeAnswered}/{pendingResume.test.questions.length} answered · Started {formatDate(pendingResume.startedAt)}
-              {resumeTimer?.hasTimer &&
-                ` · ${resumeTimer.isExpired ? 'Time expired' : `${formatTime(resumeTimer.remainingMs)} remaining`}`}
+            <p className="home-resume__title">{pendingResume.test.title}</p>
+            <p className="utility-text home-resume__meta">
+              {resumeAnswered}/{pendingResume.test.questions.length} answered · {formatDate(pendingResume.startedAt)}
+              {resumeTimer?.hasTimer && (
+                <>
+                  {' · '}
+                  <Clock size={12} strokeWidth={2} style={{ verticalAlign: '-2px', marginRight: '0.25rem' }} aria-hidden />
+                  {resumeTimer.isExpired ? 'Time expired' : `${formatTime(resumeTimer.remainingMs)} left`}
+                </>
+              )}
             </p>
-            <div className="flow-actions">
-              <button type="button" className="btn btn-primary" onClick={onResume}>
-                Resume →
+            <div className="home-resume__actions">
+              <button type="button" className="btn btn-primary btn--large" onClick={onResume}>
+                <Play size={18} strokeWidth={2} aria-hidden />
+                Resume Test
               </button>
               <button type="button" className="btn" onClick={onDiscard}>
+                <Trash2 size={16} strokeWidth={2} aria-hidden />
                 Discard
               </button>
             </div>
           </section>
         )}
 
-        {recentHistory.length > 0 && (
-          <section className="flow-block">
-            <div className="flow-block__head">
-              <h2>Recent Tests</h2>
-              {history.length > HOME_HISTORY_LIMIT && (
-                <button type="button" className="btn btn-text" onClick={onViewHistory}>
-                  View all
-                </button>
-              )}
-            </div>
-            <HistoryList entries={recentHistory} onSelect={onViewTest} />
-          </section>
-        )}
-
-        {history.length === 0 && !pendingResume && (
-          <section className="flow-block flow-block--quiet">
-            <p className="flow-lead" style={{ margin: 0 }}>
-              Complete a test to see it in your history.
-            </p>
-          </section>
-        )}
-
-        <section className="flow-block">
-          <h2>Import New Test</h2>
-          <p className="flow-lead">Paste JSON from your clipboard, upload a file, or type directly.</p>
+        <section className="home-import" aria-label="Import new test">
+          <label htmlFor="test-json" className="utility-text field-label">
+            Test JSON
+          </label>
+          <textarea
+            id="test-json"
+            className="editorial-json home-import__textarea"
+            value={jsonText}
+            onChange={(e) => {
+              setJsonText(e.target.value);
+              setPasteMessage(null);
+            }}
+            placeholder='{"title": "My Test", "questions": [...]}'
+            aria-label="Test JSON input"
+          />
 
           <div className="toolbar-row">
             <button type="button" className="btn" onClick={handlePaste}>
+              <ClipboardPaste size={16} strokeWidth={2} aria-hidden />
               Paste
             </button>
             <label className="btn" style={{ cursor: 'pointer' }}>
-              Upload File
+              <Upload size={16} strokeWidth={2} aria-hidden />
+              Upload
               <input type="file" accept=".json,application/json" hidden onChange={handleFileUpload} />
             </label>
             {jsonText && (
@@ -179,26 +186,14 @@ export function HomeScreen({
 
           {pasteMessage && <p className="utility-text">{pasteMessage}</p>}
 
-          <label htmlFor="test-json" className="utility-text field-label">
-            Test JSON
-          </label>
-          <textarea
-            id="test-json"
-            className="editorial-json"
-            value={jsonText}
-            onChange={(e) => {
-              setJsonText(e.target.value);
-              setPasteMessage(null);
-            }}
-            placeholder='{"title": "My Test", "questions": [...]}'
-            aria-label="Test JSON input"
-          />
-
-          <div className="flow-actions">
-            <button type="button" className="btn btn-primary" onClick={handleImport} disabled={!jsonText.trim()}>
-              Start Test →
-            </button>
-          </div>
+          <button
+            type="button"
+            className="btn btn-primary btn--large home-import__start"
+            onClick={handleImport}
+            disabled={!jsonText.trim()}
+          >
+            Start Test
+          </button>
 
           {errors.length > 0 && (
             <div className="notice notice--error">
@@ -211,7 +206,21 @@ export function HomeScreen({
             </div>
           )}
         </section>
-      </div>
+      </main>
+
+      {recentHistory.length > 0 && (
+        <footer className="home-screen__footer">
+          <div className="home-screen__footer-head">
+            <p className="utility-text">Recent</p>
+            {history.length > HOME_HISTORY_LIMIT && (
+              <button type="button" className="btn btn-text" onClick={onViewHistory}>
+                View all
+              </button>
+            )}
+          </div>
+          <HistoryList entries={recentHistory} onSelect={onViewTest} />
+        </footer>
+      )}
     </div>
   );
 }

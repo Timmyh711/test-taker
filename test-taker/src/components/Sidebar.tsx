@@ -1,7 +1,9 @@
+import { Flag } from 'lucide-react';
 import type { Question, QuestionGrade, QuestionStatus } from '../types/test';
-import { statusColors } from '../theme/theme';
+import { useSettings } from '../hooks/useSettings';
+import { getStatusColor } from '../theme/theme';
 
-export const SIDEBAR_WIDTH = 88;
+export const SIDEBAR_WIDTH = 52;
 
 interface Props {
   questions: Question[];
@@ -12,36 +14,22 @@ interface Props {
 }
 
 export function Sidebar({ questions, currentIndex, statuses, onSelect, grades }: Props) {
+  const { resolvedMode } = useSettings();
+  const isDark = resolvedMode === 'dark';
   const gradeMap = new Map(grades?.map((g) => [g.q_number, g]));
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <div
-        className="utility-text"
-        style={{ padding: '0.75rem 0.5rem', textAlign: 'center', borderBottom: '1px solid var(--border-color)' }}
-      >
-        {questions.length} Q
-      </div>
-
-      <div
-        style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: '0.5rem',
-          display: 'grid',
-          gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '0.375rem',
-          alignContent: 'start',
-        }}
-      >
+    <div className="sidebar-nav">
+      <div className="utility-text sidebar-nav__label">{questions.length}</div>
+      <div className="sidebar-nav__list">
         {questions.map((q, i) => {
           const status = statuses[i];
           const grade = gradeMap.get(q.q_number);
           const isSelected = i === currentIndex;
 
-          let dotColor = statusColors[status];
-          if (grade?.correct === true) dotColor = statusColors.answered;
-          if (grade?.correct === false) dotColor = statusColors.flagged;
+          let dotColor = getStatusColor(status, isDark);
+          if (grade?.correct === true) dotColor = getStatusColor('answered', isDark);
+          if (grade?.correct === false) dotColor = getStatusColor('flagged', isDark);
 
           return (
             <button
@@ -50,26 +38,12 @@ export function Sidebar({ questions, currentIndex, statuses, onSelect, grades }:
               onClick={() => onSelect(i)}
               aria-label={`Question ${q.q_number}${status === 'flagged' ? ', flagged' : ''}`}
               aria-current={isSelected ? 'true' : undefined}
-              className={`nav-cell ${isSelected ? 'nav-cell--selected' : ''}`}
-              style={{ width: '100%', aspectRatio: '1', position: 'relative' }}
+              className={`nav-cell nav-cell--sidebar${isSelected ? ' nav-cell--selected' : ''}`}
             >
               {q.q_number}
-              <span
-                className="nav-cell__dot"
-                style={{ background: isSelected ? 'var(--bg-primary)' : dotColor }}
-              />
+              <span className="nav-cell__dot" style={{ background: isSelected ? 'var(--bg-primary)' : dotColor }} />
               {status === 'flagged' && (
-                <span
-                  style={{
-                    position: 'absolute',
-                    top: 2,
-                    right: 3,
-                    fontSize: '0.5rem',
-                    color: statusColors.flagged,
-                  }}
-                >
-                  ⚑
-                </span>
+                <Flag className="nav-cell__flag" size={10} strokeWidth={2} aria-hidden />
               )}
             </button>
           );

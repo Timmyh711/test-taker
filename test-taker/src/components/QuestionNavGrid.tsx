@@ -1,5 +1,6 @@
+import { Flag } from 'lucide-react';
 import type { QuestionStatus } from '../types/test';
-import { statusColors } from '../theme/theme';
+import { statusColors, statusColorsDark } from '../theme/theme';
 
 interface Props {
   questionNumbers: number[];
@@ -15,6 +16,9 @@ export function QuestionNavGrid({
   statuses,
   onSelect,
 }: Props) {
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  const palette = isDark ? statusColorsDark : statusColors;
+
   return (
     <div className="nav-grid" role="navigation" aria-label="Question navigation">
       {questionNumbers.map((qNum, i) => {
@@ -28,14 +32,12 @@ export function QuestionNavGrid({
             onClick={() => onSelect(i)}
             aria-label={`Question ${qNum}${status === 'flagged' ? ', flagged' : ''}`}
             aria-current={isSelected ? 'true' : undefined}
-            className={`nav-cell ${isSelected ? 'nav-cell--selected' : ''}`}
+            className={`nav-cell${isSelected ? ' nav-cell--selected' : ''}`}
           >
             {qNum}
-            <span className="nav-cell__dot" style={{ background: statusColors[status] }} />
+            <span className="nav-cell__dot" style={{ background: palette[status] }} />
             {status === 'flagged' && (
-              <span style={{ position: 'absolute', top: 2, right: 3, fontSize: '0.5rem', color: statusColors.flagged }}>
-                ⚑
-              </span>
+              <Flag className="nav-cell__flag" size={10} strokeWidth={2} aria-hidden />
             )}
           </button>
         );
