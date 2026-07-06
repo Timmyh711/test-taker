@@ -121,7 +121,7 @@ function App() {
   const viewingEntry = viewingHistoryId ? findHistoryEntry(history, viewingHistoryId) : null;
 
   return (
-    <>
+    <div className="app-root">
       {screen === 'import' && !session && (
         <HomeScreen
           pendingResume={pendingResume}
@@ -177,7 +177,7 @@ function App() {
         onThemeModeChange={setThemeMode}
         onAccentChange={setAccentColor}
       />
-    </>
+    </div>
   );
 }
 
